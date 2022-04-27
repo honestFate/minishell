@@ -4,13 +4,13 @@ SRC = ./sources/
 OBJ = ./obj/
 C = gcc
 CFLAGS = -Wall -Wextra -Werror -g
-INCLUDES = minishell.h
+INCLUDES = minishell.h color.h
 LIB_DIR = ./libft/
 LIB = libft.a
 
-SRCS =	minishell.c
+SRCS =	$(notdir $(wildcard $(SRC)*.c))
 
-OBJS = $(addprefix $(OBJ), $(SRCS:%.c=%.o))
+OBJS = $(SRCS:%.c=$(OBJ)%.o)
 
 NAME = minishell
 
@@ -20,19 +20,18 @@ $(NAME): $(OBJS)
 	@make -C $(LIB_DIR)
 	$(CC) -o $(NAME) $(OBJS) $(CFLAGS) -lreadline -ltermcap $(LIB_DIR)$(LIB)
 
-$(OBJ)%.o: $(SRC)%.c $(INC)/$(INCLUDES)
+$(OBJ)%.o: $(SRC)%.c $(INCLUDES:%=$(INC)%)
 	@mkdir -p obj
 	$(CC) $(CFLAGS) -c $< -o $@ -I$(INC) -I$(LIB_DIR)
 
-libft:
-	@make -C libft
-
-clean:	
+clean:
+	@make -C $(LIB_DIR) clean
 	rm -rf ${OBJ}
 
 fclean:	clean
+	@make -C $(LIB_DIR) fclean
 	rm -rf $(NAME)
 
-re: clean all
+re: fclean all
 
 .PHONY:	all clean fclean re

@@ -22,10 +22,12 @@ void	print_tgetstr(char buffer[], char *str)
 void        padding_tputs(char buf[])
 {
 	extern char	PC;
+	extern short ospeed;
 	char        *temp;
 	char *buffer;
  
    buffer = buf;
+   printf("OSPEED - '%d'\n", ospeed);
    printf("PC - '%d'\n", PC);
    temp = tgetstr("pc", &buffer);
    PC = temp ? *temp : 0;
@@ -57,6 +59,8 @@ int	main(int argc, char **argv, char **env)
 		return (2);
 	if (argc >= 2)
 	{
+		add_history("simple line");
+		
 		padding_tputs(buffer);
 		if (!ft_strcmp(argv[1], "tgetnum"))
 			print_tgetnum();
@@ -65,8 +69,23 @@ int	main(int argc, char **argv, char **env)
 		else if (!ft_strcmp(argv[1], "tgetstr"))
 			print_tgetstr(buffer, argv[2]);
 	}
-	char *s = readline(">");
-	printf("%s\n", s);
-	free(s);
+	char *line;
+	while (1)
+    {
+        line = readline(READLINE_GREEN "$ " READLINE_RESET);
+        if (!line)
+            break ;
+        add_history(line);
+        puts("wow!");
+		int error = cd("libft/");
+		if (error)
+			printf("%s\n", strerror(error));
+		errno = 0;
+		error = pwd();
+		if (error)
+			printf("%s\n", strerror(error));
+		errno = 0;
+		free(line);
+    }
     return (0);
 }
