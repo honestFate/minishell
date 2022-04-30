@@ -25,7 +25,7 @@ typedef struct	minishell_s
 {
 	env_list_t	*env_list;
 	int			env_list_size;
-	char		**env_arr;		
+	char		**env_arr;
 }				minishell_t;
 
 int	pwd(void);
@@ -36,5 +36,7 @@ int	env_set_key(env_list_t *elem, char *key);
 int	env_set_val(env_list_t *elem, char *val);
 void    env_list_clear(minishell_t *shell);
 void	ft_strcpy(char **dst, const char *src);
+void	shell_sort(char **s, int s_size);
+void	set_increment(int *arr);
 
 #endif
