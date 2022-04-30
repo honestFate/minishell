@@ -2,9 +2,14 @@
 
 int	pwd(void)
 {
+	int		error;
     char	path[PATH_MAX + 1];
 
-	printf("%s\n", getcwd(path, sizeof(path)));
+	error = getcwd(path, PATH_MAX + 1);
+	if (!error)
+		printf("%s\n", path);
+	if (path)
+		free(path);
 	return (errno);
 }
 
@@ -18,14 +23,14 @@ int	cd(const char *path)
 		chdir(path);
 	else
 	{
-		getcwd(current_path, sizeof(current_path));
-		if (errno)
+		if (getcwd(path, PATH_MAX + 1))
 			return (errno);
-		temp = ft_strjoin(current_path, "/");
-		target_path = ft_strjoin(temp, path);
-		free(temp);
-		printf("%s\n", target_path);
-		chdir(target_path); 
+		ft_strlcat(current_path, "/", PATH_MAX + 2);
+		target_path = ft_strjoin(current_path, path);
+		if (!target_path)
+			return (errno);
+		printf("%s\n", target_path); //debug
+		chdir(target_path);
 		free(target_path);
 	}
 	return (errno);
