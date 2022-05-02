@@ -1,45 +1,62 @@
 #include "minishell.h"
 
-int	env_strs_len(env_list_t *env)
+int	env_copy(char ***dst, char **env)
 {
-	int	len;
+	int	i;
 
-	len = 0;
-	while (env)
+	i = 0;
+	while (env[i])
+		++i;
+	*dst = malloc((i + 1) * sizeof(char **));
+	i = 0;
+	while (env[i])
 	{
-		len += ft_strlen(env->key) + 1;
-		if (env->val)
-			len += ft_strlen(env->val) + 2;
-		else
-			len += 3;
-		env = env->next;
+		*dst[i] = ft_strdup(env[i]);
+		if (!*dst[i])
+		{
+			while (--i >= 0)
+				free(*dst[i]);
+			free(*dst);
+			return (errno);
+		}
+		++i;
 	}
-	return (len);
+	*dst[i] = NULL;
+	return (errno);
+}
+
+void	env_fill_line(char *line, env_list_t *ptr, int dst_size)
+{
+	ft_strlcat(line, ptr->key, dst_size);
+	ft_strlcat(line, "=", dst_size);
+	if (ptr->val)
+		ft_strlcat(line, ptr->val, dst_size);
 }
 
 int	env_fill_array(minishell_t *minishell)
 {
 	int			i;
+	int			dst_size;
 	env_list_t	*ptr;
-	char		*line;
 
-	line = malloc(env_strs_len(minishell->env_list) * sizeof(char));
-	if (!line)
-		return (errno);
 	ptr = minishell->env_list;
 	i = 0;
 	while (ptr)
 	{
-		minishell->env_arr[i] = line;
-		ft_strcpy(&line, ptr->key);
-		*(line++) = '=';
+		dst_size = ft_strlen(ptr->key);
 		if (ptr->val)
-			ft_strcpy(&line, ptr->val);
-		else
-			ft_strcpy(&line, "''");
-		*(line++) = '\0';
+			dst_size += ft_strlen(ptr->val);
+		++dst_size;
+		minishell->env_arr[i] = (char *)malloc(dst_size * sizeof(char));
+		if (!minishell->env_arr[i])
+		{
+			while (--i >= 0)
+				free(minishell->env_arr[i]);
+			return (errno);
+		}
+		env_fill_line(minishell->env_arr[i], ptr, dst_size);
 		ptr = ptr->next;
-		i++;
+		++i;
 	}
 	minishell->env_arr[i] = NULL;
 	return (0);
@@ -51,7 +68,7 @@ int	env_to_array(minishell_t *minishell)
 		free(minishell->env_arr);
 	if (minishell->env_list_size)
 		minishell->env_arr = (char **)
-			malloc((minishell->env_list_size + 1) * sizeof(char *));
+				malloc((minishell->env_list_size + 1) * sizeof(char *));
 	else
 	{
 		minishell->env_arr = NULL;
@@ -66,7 +83,7 @@ int	env_to_array(minishell_t *minishell)
 	return (0);
 }
 
-int	env_to_list(minishell_t *minishell)
+int	env_to_list(minishell_t *minishell, char **envp)
 {
 	int			i;
 	env_list_t	*ptr;
@@ -74,20 +91,26 @@ int	env_to_list(minishell_t *minishell)
 	minishell->env_list = NULL;
 	i = 0;
 	minishell->env_list_size = i;
-	if (minishell->env_arr[i])
+	if (!envp[i])
 		return (0);
-	ptr = new_env_elem(minishell->env_arr[i]);
+	ptr = new_env_elem(envp[i]);
 	if (!ptr)
 		return (errno);
 	minishell->env_list = ptr;
 	++i;
 	minishell->env_list_size = i;
-	while (minishell->env_arr[i])
+	while (envp[i])
 	{
-		minishell->env_list->next = new_env_elem(minishell->env_arr[i]);
-		if (!minishell->env_list->next)
+		ptr->next = new_env_elem(envp[i]);
+		if (!ptr->next)
+		{
+			env_list_clear(minishell);
 			return (errno);
+		}
 		minishell->env_list_size = i;
+		ptr = ptr->next;
 		i++;
 	}
+	ptr->next = NULL;
+	return (errno);
 }

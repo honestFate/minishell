@@ -8,7 +8,7 @@ INCLUDES = minishell.h color.h
 LIB_DIR = ./libft/
 LIB = libft.a
 
-SRCS =	$(notdir $(wildcard $(SRC)*.c))
+SRCS =	built_in.c env_copy.c env_sort.c env_utils.c env.c exec_cmd.c minishell.c utils.c
 
 OBJS = $(SRCS:%.c=$(OBJ)%.o)
 

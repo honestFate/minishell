@@ -25,11 +25,11 @@ int	env_set_val(env_list_t *elem, char *val)
 env_list_t	*new_env_elem(char *env_var)
 {
 	env_list_t	*elem;
-	char		*env_splited;
+	char		**env_splited;
 
 	env_splited = ft_split(env_var, '=');
 	if (!env_splited)
-		return (errno);
+		return (NULL);
 	elem = (env_list_t *)malloc(sizeof(env_list_t));
 	if (!elem)
 		return (NULL);	
@@ -43,17 +43,17 @@ env_list_t	*new_env_elem(char *env_var)
 	return (elem);
 }
 
-void    env_list_clear(minishell_t *shell)
+void    env_list_clear(minishell_t *minishell)
 {
     env_list_t	*ptr;
 
-	while (shell->env_list)
+	while (minishell->env_list)
 	{
-		ptr = shell->env_list->next;
-		free(shell->env_list->key);
-		if (shell->env_list->val)
-			free(shell->env_list->val);
-		free(shell->env_list);
-		shell->env_list = ptr;
+		ptr = minishell->env_list->next;
+		free(minishell->env_list->key);
+		if (minishell->env_list->val)
+			free(minishell->env_list->val);
+		free(minishell->env_list);
+		minishell->env_list = ptr;
 	}
 }

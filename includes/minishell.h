@@ -16,9 +16,9 @@
 
 typedef struct	env_list_s
 {
-	char		*key;
-	char		*val;
-	env_list_t	*next;
+	char				*key;
+	char				*val;
+	struct env_list_s	*next;
 }				env_list_t;
 
 typedef struct	minishell_s
@@ -29,13 +29,18 @@ typedef struct	minishell_s
 }				minishell_t;
 
 int	pwd(void);
-int	cd(const char *path);
+int	cd(char *path);
+int	env(minishell_t *minishell, env_list_t *list);
 
+int	env_copy(char ***dst, char **env);
+void	env_fill_line(char *line, env_list_t *ptr, int dst_size);
+int	env_fill_array(minishell_t *minishell);
+int	env_to_array(minishell_t *minishell);
+int	env_to_list(minishell_t *minishell, char **envp);
 env_list_t	*new_env_elem(char *env_var);
 int	env_set_key(env_list_t *elem, char *key);
 int	env_set_val(env_list_t *elem, char *val);
 void    env_list_clear(minishell_t *shell);
-void	ft_strcpy(char **dst, const char *src);
 void	shell_sort(char **s, int s_size);
 void	set_increment(int *arr);
 
