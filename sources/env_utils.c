@@ -39,6 +39,7 @@ env_list_t	*new_env_elem(char *env_var)
 	{
 		free(elem->key);
 		free(elem);
+		return (NULL);
 	}
 	return (elem);
 }

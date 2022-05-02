@@ -30,7 +30,10 @@ typedef struct	minishell_s
 
 int	pwd(void);
 int	cd(char *path);
-int	env(minishell_t *minishell, env_list_t *list);
+int	env(char **env_arr);
+//int	export();
+//int	echo();
+//int	unset();
 
 int	env_copy(char ***dst, char **env);
 void	env_fill_line(char *line, env_list_t *ptr, int dst_size);

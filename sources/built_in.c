@@ -31,10 +31,28 @@ int	cd(char *path)
 	return (errno);
 }
 
-/*int	env(minishell_t *minishell, env_list_t *list)
+int	env(char **env_arr)
 {
-	if (list)
+	int	i;
+
+	i = 0;
+	while (env_arr[i])
 	{
+		printf("%s\n", env_arr[i]);
+		i++;
+	}
+	return (0);
+}
+
+int	echo(char **argv, int flag)
+{
+	int	i;
+
+	while (argv[i])
+	{
+		printf("%s ", argv[i]);
 
 	}
-}*/
+	
+	return (0);
+}
