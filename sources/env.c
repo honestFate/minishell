@@ -66,12 +66,13 @@ int	env_to_array(minishell_t *minishell)
 {
 	if (minishell->env_arr)
 		free(minishell->env_arr);
-	if (minishell->env_list_size)
-		minishell->env_arr = (char **)
-				malloc((minishell->env_list_size + 1) * sizeof(char *));
-	else
+	minishell->env_arr = (char **)
+			malloc((minishell->env_list_size + 1) * sizeof(char *)); 
+	if (!minishell->env_arr)
+		return (errno);
+	if (!minishell->env_list_size)
 	{
-		minishell->env_arr = NULL;
+		minishell->env_arr[0] = NULL;
 		return (0);
 	}
 	if (env_fill_array(minishell))

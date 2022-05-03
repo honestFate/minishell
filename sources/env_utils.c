@@ -32,7 +32,8 @@ env_list_t	*new_env_elem(char *env_var)
 		return (NULL);
 	elem = (env_list_t *)malloc(sizeof(env_list_t));
 	if (!elem)
-		return (NULL);	
+		return (NULL);
+	elem->next = NULL;	
 	if (env_set_key(elem, env_splited[0]))
 		free(elem);
 	else if (env_splited[1] && env_set_val(elem, env_splited[1]))
@@ -46,15 +47,54 @@ env_list_t	*new_env_elem(char *env_var)
 
 void    env_list_clear(minishell_t *minishell)
 {
-    env_list_t	*ptr;
-
 	while (minishell->env_list)
+		minishell->env_list = env_del_elem(minishell->env_list);
+}
+
+env_list_t	*env_del_elem(env_list_t *env_list)
+{
+	env_list_t	*ptr;
+
+	ptr = env_list->next;
+	free(env_list->key);
+	if (env_list->val)
+		free(env_list->val);
+	free(env_list);
+	return (ptr);
+}
+
+int	envlist_add_var(minishell_t *minishell, char **argv)
+{
+	int	i;
+	env_list_t	*elem;
+
+	i = 0;
+	while (argv[i])
 	{
-		ptr = minishell->env_list->next;
-		free(minishell->env_list->key);
-		if (minishell->env_list->val)
-			free(minishell->env_list->val);
-		free(minishell->env_list);
-		minishell->env_list = ptr;
+		elem = new_env_elem(argv[i]);
+		if (!elem)
+		{
+			env_list_clear(minishell);
+			return (errno);
+		}
+		env_add_back(&minishell->env_list, elem);
+		++i;
 	}
+	return (0);
+}
+
+
+void	env_add_back(env_list_t **env_list, env_list_t *new_elem)
+{
+	env_list_t	*ptr;
+
+	if (!env_list)
+	{
+		*env_list = new_elem;
+		return ;
+	}
+	ptr = *env_list;
+	while (ptr->next)
+		ptr = ptr->next;
+	ptr->next = new_elem;
 }

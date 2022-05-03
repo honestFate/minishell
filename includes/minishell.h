@@ -26,14 +26,17 @@ typedef struct	minishell_s
 	env_list_t	*env_list;
 	int			env_list_size;
 	char		**env_arr;
+	char		*history_file;
+	int			exit_status;
 }				minishell_t;
 
-int	pwd(void);
-int	cd(char *path);
-int	env(char **env_arr);
-//int	export();
-//int	echo();
-//int	unset();
+int	ft_pwd(void);
+int	ft_cd(char *path);
+int	ft_env(env_list_t *env_list);
+//int	ft_export();
+//int	ft_echo();
+//int	ft_unset();
+//int	ft_exit();
 
 int	env_copy(char ***dst, char **env);
 void	env_fill_line(char *line, env_list_t *ptr, int dst_size);
@@ -44,6 +47,9 @@ env_list_t	*new_env_elem(char *env_var);
 int	env_set_key(env_list_t *elem, char *key);
 int	env_set_val(env_list_t *elem, char *val);
 void    env_list_clear(minishell_t *shell);
+env_list_t	*env_del_elem(env_list_t *env_list);
+int	envlist_add_var(minishell_t *minishell, char **argv);
+void	env_add_back(env_list_t **env_list, env_list_t *new_elem);
 void	shell_sort(char **s, int s_size);
 void	set_increment(int *arr);
 

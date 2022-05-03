@@ -10,5 +10,5 @@ int main(int argc, char **argv, char **envp)
         printf("%s\n", envp[i]);
         ++i;
     }
-    return (0);
+    return (4);
 }
