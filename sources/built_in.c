@@ -88,7 +88,7 @@ int	ft_unset(minishell_t *minishell, char **argv)
 
 int	ft_exit(char **argv) //need to make better parser 
 {
-	int32_t	i;
+	int	i;
 
 	i = 0;
 	while (argv[0][i])
