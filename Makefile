@@ -8,7 +8,8 @@ INCLUDES = minishell.h color.h
 LIB_DIR = ./libft/
 LIB = libft.a
 
-SRCS =	built_in.c env_copy.c env_sort.c env_utils.c env.c exec_cmd.c minishell.c utils.c
+SRCS =	built_in.c env_copy.c env_sort.c env_utils.c env.c exec_cmd.c minishell.c utils.c history.c\
+		get_next_line.c get_next_line_utils.c
 
 OBJS = $(SRCS:%.c=$(OBJ)%.o)
 
@@ -22,7 +23,7 @@ $(NAME): $(OBJS)
 
 $(OBJ)%.o: $(SRC)%.c $(INCLUDES:%=$(INC)%)
 	@mkdir -p obj
-	$(CC) $(CFLAGS) -c $< -o $@ -I$(INC) -I$(LIB_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -I$(INC) -I$(LIB_DIR) -I./gnl/
 
 clean:
 	@make -C $(LIB_DIR) clean

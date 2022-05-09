@@ -9,6 +9,7 @@
 # include <limits.h>
 # include <curses.h>
 # include <errno.h>
+# include "get_next_line.h"
 # include "libft.h"
 # include "color.h"
 # define BUFFSIZE 100
@@ -28,8 +29,10 @@ typedef struct	minishell_s
 	char		**env_arr;
 	char		*history_file;
 	int			exit_status;
+	int			history_fd;
 }				minishell_t;
 
+//built-in
 int	ft_pwd(void);
 int	ft_cd(char *path);
 int	ft_env(env_list_t *env_list);
@@ -38,6 +41,7 @@ int	ft_env(env_list_t *env_list);
 //int	ft_unset();
 //int	ft_exit();
 
+//env
 int	env_copy(char ***dst, char **env);
 void	env_fill_line(char *line, env_list_t *ptr, int dst_size);
 int	env_fill_array(minishell_t *minishell);
@@ -52,5 +56,14 @@ int	envlist_add_var(minishell_t *minishell, char **argv);
 void	env_add_back(env_list_t **env_list, env_list_t *new_elem);
 void	shell_sort(char **s, int s_size);
 void	set_increment(int *arr);
+
+//history
+int	open_history_file(char *home_path);
+void	ft_read_history(int fd);
+int	put_history_line(char *line, int fd);
+
+//utils
+void	print_error(int error);
+char	*ft_getenv(env_list_t *env_list, char *name);
 
 #endif
