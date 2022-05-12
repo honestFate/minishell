@@ -21,7 +21,7 @@ $(NAME): $(OBJS)
 	@make -C $(LIB_DIR)
 	$(CC) -o $(NAME) $(OBJS) $(CFLAGS) -lreadline -ltermcap $(LIB_DIR)$(LIB)
 
-$(OBJ)%.o: $(SRC)%.c $(INCLUDES:%=$(INC)%)
+%/%.o: $(SRC)%.c $(INCLUDES:%=$(INC)%)
 	@mkdir -p obj
 	$(CC) $(CFLAGS) -c $< -o $@ -I$(INC) -I$(LIB_DIR) -I./gnl/
 

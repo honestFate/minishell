@@ -20,7 +20,8 @@ typedef struct	s_cmd_list
 
 int main(int argc, char *argv[], char *envp[])
 {
-	access("../minishel", W_OK);
+	errno = 100;
+	access("minihell", F_OK);
 	printf("%s\n", strerror(errno));
 	// int i = 0;
 	// (void)argc;

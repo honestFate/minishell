@@ -14,6 +14,19 @@
 # include "color.h"
 # define BUFFSIZE 100
 # define TERM_TYPE_BUFF 2048
+# define READ_END 0
+# define WRITE_END 1
+
+//FOR TEST
+typedef struct	s_pipe_line
+{
+	char				*cmd;
+	char				**argv;
+	char				*redirect_in;
+	char				*redirect_out;
+	struct s_pipe_line	*next;
+}				t_pipe_line;
+//END
 
 typedef struct	env_list_s
 {
