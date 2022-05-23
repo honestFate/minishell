@@ -25,7 +25,7 @@ int	env_copy(char ***dst, char **env)
 	return (errno);
 }
 
-void	env_fill_line(char *line, env_list_t *ptr, int dst_size)
+void	env_fill_line(char *line, t_env_list *ptr, int dst_size)
 {
 	ft_strlcat(line, ptr->key, dst_size);
 	ft_strlcat(line, "=", dst_size);
@@ -33,11 +33,11 @@ void	env_fill_line(char *line, env_list_t *ptr, int dst_size)
 		ft_strlcat(line, ptr->val, dst_size);
 }
 
-int	env_fill_array(minishell_t *minishell)
+int	env_fill_array(t_minishell *minishell)
 {
 	int			i;
 	int			dst_size;
-	env_list_t	*ptr;
+	t_env_list	*ptr;
 
 	ptr = minishell->env_list;
 	i = 0;
@@ -62,7 +62,7 @@ int	env_fill_array(minishell_t *minishell)
 	return (0);
 }
 
-int	env_to_array(minishell_t *minishell)
+int	env_to_array(t_minishell *minishell)
 {
 	if (minishell->env_arr)
 		free(minishell->env_arr);
@@ -84,10 +84,10 @@ int	env_to_array(minishell_t *minishell)
 	return (0);
 }
 
-int	env_to_list(minishell_t *minishell, char **envp)
+int	env_to_list(t_minishell *minishell, char **envp)
 {
 	int			i;
-	env_list_t	*ptr;
+	t_env_list	*ptr;
 
 	minishell->env_list = NULL;
 	i = 0;

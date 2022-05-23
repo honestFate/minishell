@@ -5,6 +5,7 @@ int	find_cmd(char *cmd, env_list_t *env_list, char *path_to_cmd)
 	int		i;
 	char	*path;
 	int		err;
+	char	*temp;
 	char	*envp_path;
 
 	path_to_cmd = NULL;
@@ -16,32 +17,33 @@ int	find_cmd(char *cmd, env_list_t *env_list, char *path_to_cmd)
 	else if (env_list)
 	{
 		path = ft_getenv(env_list, "PATH");
-		if (path)
+		if (!path)
+			return (err);
+		envp_path = ft_split(path, ":");
+		free(path);
+		if (!envp_path)
+			return (err);
+		while (envp_path[i])
 		{
-			envp_path = ft_split(path, ":");
-			if (envp_path)
+			temp = ft_strjoin(envp_path[i], "/");
+			path_to_cmd = ft_strjoin(temp, cmd);
+			free(temp);
+			access(path_to_cmd, X_OK);
+			if (!errno)
 			{
-				while (envp_path[i])
-				{
-					access(envp_path[i], X_OK);
-					if (!errno)
-					{
-						err = 0;
-						path_to_cmd = strdup(cmd);
-						break ;
-					}
-					if (err != EACCES)
-						err = errno;
-					errno = 0;
-					++i;
-				}
-				i = 0;
-				while (envp_path[i])
-					free(envp_path[i++]);
-				free(envp_path);
+				err = 0;
+				break ;
 			}
-			free(path);
+			free(path_to_cmd);
+			if (errno == EACCES)
+				err = errno;
+			errno = 0;
+			++i;
 		}
+		i = 0;
+		while (envp_path[i])
+			free(envp_path[i++]);
+		free(envp_path);
 	}
 	return (err);
 }

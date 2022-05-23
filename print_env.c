@@ -6,6 +6,8 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #define READ_END 0
 #define WRITE_END 1
@@ -20,9 +22,27 @@ typedef struct	s_cmd_list
 
 int main(int argc, char *argv[], char *envp[])
 {
-	errno = 100;
+	struct stat buf;
+	int fd = open("TEST", O_CREAT, 0644);
+	fstat(fd, &buf);
+	printf("%d\n", buf.st_mode);
+	printf("%ld\n", buf.st_size);
+	read(0, NULL, 1);
+	struct stat info;
+	if (fstat(fd, &info) != 0)
+		printf("ERROR\n");
+	printf("  inode:   %d\n",   (int) info.st_ino);
+      printf(" dev id:   %d\n",   (int) info.st_dev);
+      printf("   mode:   %08x\n",       info.st_mode);
+      printf("  links:   %d\n",         info.st_nlink);
+      printf("    uid:   %d\n",   (int) info.st_uid);
+      printf("    gid:   %d\n",   (int) info.st_gid);
+	// write(3, "text to fd 3\n", 14);
+	// write(4, "text to fd 4\n", 14);
+	// write(5, "text to fd 5\n", 14);
+	/*errno = 100;
 	access("minihell", F_OK);
-	printf("%s\n", strerror(errno));
+	printf("%s\n", strerror(errno));*/
 	// int i = 0;
 	// (void)argc;
 	// (void)argv;

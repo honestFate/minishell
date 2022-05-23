@@ -1,36 +1,48 @@
 #include "minishell.h"
 
-int	env_set_key(env_list_t *elem, char *key)
+int	env_set_key(t_env_list *elem, char *key)
 {
-	int			key_len;
+	int		key_len;
+	char	*temp;
 
 	key_len = ft_strlen(key) + 1;
-	elem->key = (char *)malloc(key_len * sizeof(char));
-	if (elem->key)
-		ft_strlcpy(elem->key, key, key_len);
+	temp = (char *)malloc(key_len * sizeof(char));
+	if (temp)
+	{
+		if (!elem->key)
+			free(elem->key);
+		ft_strlcpy(temp, key, key_len);
+		elem->key = temp;
+	}
 	return (errno);
 }
 
-int	env_set_val(env_list_t *elem, char *val)
+int	env_set_val(t_env_list *elem, char *val)
 {
-	int	val_len;
+	int		val_len;
+	char	*temp;
 
 	val_len = ft_strlen(val) + 1;
-	elem->val = (char *)malloc(val_len * sizeof(char));
-	if (elem->key)
-		ft_strlcpy(elem->key, val, val_len);
+	temp = (char *)malloc(val_len * sizeof(char));
+	if (temp)
+	{
+		if (!elem->val)
+			free(elem->val);
+		ft_strlcpy(temp, val, val_len);
+		elem->val = temp;
+	}
 	return (errno);
 }
 
-env_list_t	*new_env_elem(char *env_var)
+t_env_list	*new_env_elem(char *env_var)
 {
-	env_list_t	*elem;
+	t_env_list	*elem;
 	char		**env_splited;
 
 	env_splited = ft_split(env_var, '=');
 	if (!env_splited)
 		return (NULL);
-	elem = (env_list_t *)malloc(sizeof(env_list_t));
+	elem = (t_env_list *)malloc(sizeof(t_env_list));
 	if (!elem)
 		return (NULL);
 	elem->next = NULL;	
@@ -45,15 +57,15 @@ env_list_t	*new_env_elem(char *env_var)
 	return (elem);
 }
 
-void    env_list_clear(minishell_t *minishell)
+void    env_list_clear(t_minishell *minishell)
 {
 	while (minishell->env_list)
 		minishell->env_list = env_del_elem(minishell->env_list);
 }
 
-env_list_t	*env_del_elem(env_list_t *env_list)
+t_env_list	*env_del_elem(t_env_list *env_list)
 {
-	env_list_t	*ptr;
+	t_env_list	*ptr;
 
 	ptr = env_list->next;
 	free(env_list->key);
@@ -63,10 +75,10 @@ env_list_t	*env_del_elem(env_list_t *env_list)
 	return (ptr);
 }
 
-int	envlist_add_var(minishell_t *minishell, char **argv)
+int	envlist_add_var(t_minishell *minishell, char **argv)
 {
 	int	i;
-	env_list_t	*elem;
+	t_env_list	*elem;
 
 	i = 0;
 	while (argv[i])
@@ -84,9 +96,9 @@ int	envlist_add_var(minishell_t *minishell, char **argv)
 }
 
 
-void	env_add_back(env_list_t **env_list, env_list_t *new_elem)
+void	env_add_back(t_env_list **env_list, t_env_list *new_elem)
 {
-	env_list_t	*ptr;
+	t_env_list	*ptr;
 
 	if (!env_list)
 	{
