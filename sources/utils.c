@@ -1,21 +1,5 @@
 #include "minishell.h"
 
-char	*ft_strerr(int error)
-{
-	if (error <= 255)
-		return (strerror(error));
-	if (error == TOO_MANY_ARGS)
-		return ("слишком много аргументов");
-}
-
-void	print_error(char *cmd, int error)
-{
-	ft_putendl_fd("minishell: ", STDERR_FILENO);
-	ft_putendl_fd(cmd, STDERR_FILENO);
-	ft_putendl_fd(": ", STDERR_FILENO);
-	ft_putendl_fd(ft_strerr(error), STDERR_FILENO);
-}
-
 void	builtin_arr_init(t_minishell *minishell)
 {
 	minishell->built_in[BIN_ECHO] = ft_echo;
@@ -34,6 +18,16 @@ int	ft_isspace(char c)
 		|| c == '\r' || c == ' ')
 		return (1);
 	return (0);
+}
+
+void	free_str_arr(char **strings)
+{
+	int	i;
+
+	i = 0;
+	while (strings[i])
+		free(strings[i++]);
+	free(strings);
 }
 
 int	check_overflow(char *s)

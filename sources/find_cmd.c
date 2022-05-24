@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int	find_cmd(char *cmd, env_list_t *env_list, char *path_to_cmd)
+int	find_cmd(char *cmd, t_env_list *env_list, char *path_to_cmd)
 {
 	int		i;
 	char	*path;

@@ -58,6 +58,7 @@ typedef struct	s_pipe_line
 	t_redirect			**redirect_out;
 	int					pid;
 	struct s_pipe_line	*next;
+	struct s_pipe_line	*prev;
 }				t_pipe_line;
 //END
 
@@ -105,16 +106,23 @@ void	shell_sort(char **s, int s_size);
 void	set_increment(int *arr);
 int		env_change_val(t_env_list *env_list, char *key, char *new_val);
 
+//exec
+int	find_cmd(char *cmd, t_env_list *env_list, char *path_to_cmd);
+
 //history
 int	open_history_file(char *home_path);
 void	ft_read_history(int fd);
 int	put_history_line(char *line, int fd);
 
 //utils
-void	print_error(char *cmd, int error);
-char	*ft_getenv(t_env_list *env_list, char *name);
 void	builtin_arr_init(t_minishell *minishell);
 int	ft_isspace(char c);
 int	check_overflow(char *s);
+void	free_str_arr(char **strings);
+
+//err_handler
+void	print_error(char *cmd, int error);
+char	*ft_getenv(t_env_list *env_list, char *name);
+void	fatal_err(t_minishell *minishell, t_pipe_line *pipe_line);
 
 #endif

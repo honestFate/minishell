@@ -6,7 +6,7 @@ int	main(int argc, char **argv, char **envp)
 	//char	*termtype;
 	//int		status;
 	char	*line;
-	minishell_t	*minishell;
+	t_minishell	*minishell;
 	(void)argc;
 	(void)argv;
 	(void)envp;
@@ -20,7 +20,7 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	else if (status < 0)
 		return (2);*/
-	minishell = malloc(sizeof(minishell_t));
+	minishell = malloc(sizeof(t_minishell));
 	minishell->history_fd = open_history_file(getenv("HOME"));
 	ft_read_history(minishell->history_fd);
 	while (1)

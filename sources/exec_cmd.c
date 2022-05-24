@@ -64,26 +64,45 @@ int	make_redirect(t_redirect **redirect)
 			redirect[i]->fd = open(redirect[i]->arg2, O_WRONLY);
 		else if (redirect[i]->type == REDIRECT_OUT_APPEND)
 			redirect[i]->fd = open(redirect[i]->arg2, O_WRONLY | O_APPEND);
-		close(redirect[i]->arg1);
 		if (errno)
 			return (errno);
+		close(redirect[i]->arg1);
 		if (dup2(redirect[i]->fd, redirect[i]->arg1) < 0)
 			return (errno);
 		++i;
 	}
 }
 
-void	exec_cmd(t_minishell *minishell, t_pipe_line *pipe_line)
+void	exec_cmd(t_minishell *minishell, t_pipe_line *pipe_line, int fd_in, int fd_out)
 {
-	int	built_in;
+	int		built_in;
+	char	*path_to_cmd;
 
+	if (fd_in >= 0)
+	{
+		if (dup2(fd_in, STDIN_FILENO) < 0)
+			fatal_err(minishell, pipe_line);	
+		close(fd_in);
+	}
+	if (fd_out >= 0)
+	{
+		if (dup2(fd_out, STDOUT_FILENO))
+			fatal_err(minishell, pipe_line);
+		close(fd_out);
+	}
 	if (make_redirect(pipe_line->redirect_in) ||
 		make_redirect(pipe_line->redirect_out))
-		fatal_err(*minishell, *pipe_line);
+		fatal_err(minishell, pipe_line);
 	built_in = is_builtin(pipe_line->cmd);
 	if (built_in >= 0)
 		minishell->built_in[built_in](minishell, pipe_line->argv);
-	
+	else
+	{
+		if (find_cmd(pipe_line->cmd, minishell->env_list, path_to_cmd))
+			fatal_err(minishell, pipe_line);
+		execve(path_to_cmd, pipe_line->argv, minishell->env_arr);
+		fatal_err(minishell, pipe_line);
+	}
 }
 
 int	pipe_exec(t_minishell *minishell, t_pipe_line *pipe_line, int type, int fd_in, int fd_out)
@@ -95,17 +114,26 @@ int	pipe_exec(t_minishell *minishell, t_pipe_line *pipe_line, int type, int fd_i
 		pipe(p);
 		pipe_exec(minishell, pipe_line, SIMPLE, fd_in, p[WRITE_END]);
 		if (pipe_line->next->next)
-			pipe_exec(minishell, pipe_line->next, PIPE, p[READ_END], STDOUT_FILENO);
+			pipe_exec(minishell, pipe_line->next, PIPE, p[READ_END], fd_out);
 		else
-			pipe_exec(minishell, pipe_line->next, SIMPLE, p[READ_END], STDOUT_FILENO);
+			pipe_exec(minishell, pipe_line->next, SIMPLE, p[READ_END], fd_out);
 	}
 	else if (type == SIMPLE)
 	{
 		pipe_line->pid = fork();
 		if (pipe_line->pid > 0)
+		{
+			if (fd_in >= 0)
+				close(fd_in);
+			if (fd_out >= 0)
+				close(fd_out);
 			return (M_OK);
+		}
 		if (pipe_line->pid == 0)
-			exec_cmd(minishell, pipe_line);
+		{
+			close(minishell->history_fd);
+			exec_cmd(minishell, pipe_line, fd_in, fd_out);
+		}
 		else
 			return (errno);
 	}
@@ -118,12 +146,21 @@ int exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 	t_pipe_line	*ptr;
 
 	if (!pipe_line->next && is_builtin(pipe_line->cmd))
-		exec_cmd(minishell, pipe_line);
+		exec_cmd(minishell, pipe_line, -1, -1);
+	else if (pipe_line->next)
+		pipe_exec(minishell, pipe_line, PIPE, -1, -1);
+	else
+		pipe_exec(minishell, pipe_line, SIMPLE, -1, -1);
 	ptr = pipe_line;
 	while (ptr)
 	{
 		if (ptr->pid > 0)
-			waitpid(ptr->pid, &exit_status, WUNTRACED);
+		{
+			if (ptr->next)
+				waitpid(ptr->pid, NULL, WUNTRACED);
+			else
+				waitpid(ptr->pid, &exit_status, WUNTRACED);
+		}
 		ptr = ptr->next;
 	}
 	return (exit_status);
