@@ -9,10 +9,11 @@ int test(void)
 	cmd0.next = &cmd1;
 	cmd1.next = &cmd2;
 	cmd2.next = NULL;
-	cmd2.redirect_out = (t_redirect *)malloc(sizeof(t_redirect));
-	cmd2.redirect_out[0].arg1 = 1;
-	cmd2.redirect_out[0].arg2 = "test1";
-	cmd2.redirect_out[0].fd = 0;
+	cmd2.redirect_out = (t_redirect **)malloc(sizeof(t_redirect *));
+	cmd2.redirect_out[0] = (t_redirect *)malloc(sizeof(t_redirect));
+	cmd2.redirect_out[0]->arg1 = 1;
+	cmd2.redirect_out[0]->arg2 = "test1";
+	cmd2.redirect_out[0]->fd = 0;
 }
 //END TEST
 
@@ -48,14 +49,26 @@ int	is_builtin(char *cmd)
 	return (-1);
 }
 
-int	make_redirect_in(t_redirect *redirect_in)
+int	make_redirect(t_redirect **redirect)
 {
 	int	i;
 
 	i = 0;
-	while (redirect_in[i])
+	while (redirect[i])
 	{
-
+		if (redirect[i]->type == REDIRECT_HEREDOC)
+			redirect[i]->fd = heredoc();
+		else if (redirect[i]->type == REDIRECT_IN)
+			redirect[i]->fd = open(redirect[i]->arg2, O_RDONLY);
+		else if (redirect[i]->type == REDIRECT_OUT)
+			redirect[i]->fd = open(redirect[i]->arg2, O_WRONLY);
+		else if (redirect[i]->type == REDIRECT_OUT_APPEND)
+			redirect[i]->fd = open(redirect[i]->arg2, O_WRONLY | O_APPEND);
+		close(redirect[i]->arg1);
+		if (errno)
+			return (errno);
+		if (dup2(redirect[i]->fd, redirect[i]->arg1) < 0)
+			return (errno);
 		++i;
 	}
 }
@@ -64,8 +77,9 @@ void	exec_cmd(t_minishell *minishell, t_pipe_line *pipe_line)
 {
 	int	built_in;
 
-	make_redirect(pipe_line->redirect_in);
-	make_redirect(pipe_line->redirect_out);
+	if (make_redirect(pipe_line->redirect_in) ||
+		make_redirect(pipe_line->redirect_out))
+		fatal_err(*minishell, *pipe_line);
 	built_in = is_builtin(pipe_line->cmd);
 	if (built_in >= 0)
 		minishell->built_in[built_in](minishell, pipe_line->argv);

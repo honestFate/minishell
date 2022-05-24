@@ -35,11 +35,16 @@
 # define M_ERR 1
 # define SIMPLE 0
 # define PIPE 1
+# define REDIRECT_IN 0
+# define REDIRECT_HEREDOC 1
+# define REDIRECT_OUT 2
+# define REDIRECT_OUT_APPEND 2
 
 //FOR TEST
 
 typedef struct	s_redirect
 {
+	int		type;
 	int		arg1;
 	char	*arg2;
 	int		fd;
@@ -49,8 +54,8 @@ typedef struct	s_pipe_line
 {
 	char				*cmd;
 	char				**argv;
-	t_redirect			*redirect_in;
-	t_redirect			*redirect_out;
+	t_redirect			**redirect_in;
+	t_redirect			**redirect_out;
 	int					pid;
 	struct s_pipe_line	*next;
 }				t_pipe_line;
