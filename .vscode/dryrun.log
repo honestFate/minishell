@@ -1,0 +1,28 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/Users/ndillon/Desktop/minishell'
+mkdir -p obj
+gcc -Wall -Wextra -Werror -g -c sources/built_in.c -o obj/built_in.o -I./includes/ -I./libft/ -I./gnl/
+ 
+mkdir -p obj
+gcc -Wall -Wextra -Werror -g -c sources/env_sort.c -o obj/env_sort.o -I./includes/ -I./libft/ -I./gnl/
+ 
+make: *** No rule to make target `obj/env_copy.o', needed by `minishell'.
+
+mkdir -p obj
+gcc -Wall -Wextra -Werror -g -c sources/env_utils.c -o obj/env_utils.o -I./includes/ -I./libft/ -I./gnl/
+mkdir -p obj
+gcc -Wall -Wextra -Werror -g -c sources/env.c -o obj/env.o -I./includes/ -I./libft/ -I./gnl/
+mkdir -p obj
+gcc -Wall -Wextra -Werror -g -c sources/exec_cmd.c -o obj/exec_cmd.o -I./includes/ -I./libft/ -I./gnl/
+mkdir -p obj
+gcc -Wall -Wextra -Werror -g -c sources/minishell.c -o obj/minishell.o -I./includes/ -I./libft/ -I./gnl/
+mkdir -p obj
+gcc -Wall -Wextra -Werror -g -c sources/utils.c -o obj/utils.o -I./includes/ -I./libft/ -I./gnl/
+mkdir -p obj
+gcc -Wall -Wextra -Werror -g -c sources/history.c -o obj/history.o -I./includes/ -I./libft/ -I./gnl/
+mkdir -p obj
+gcc -Wall -Wextra -Werror -g -c sources/get_next_line.c -o obj/get_next_line.o -I./includes/ -I./libft/ -I./gnl/
+mkdir -p obj
+gcc -Wall -Wextra -Werror -g -c sources/get_next_line_utils.c -o obj/get_next_line_utils.o -I./includes/ -I./libft/ -I./gnl/
+make: Leaving directory `/Users/ndillon/Desktop/minishell'
+ 

@@ -1,0 +1,11 @@
+{
+    "C_Cpp.errorSquiggles": "Enabled",
+    "files.associations": {
+        "curses.h": "c",
+        "history.h": "c",
+        "termios.h": "c",
+        "stdlib.h": "c"
+    },
+    "files.insertFinalNewline": true,
+    "editor.insertSpaces": false
+}
