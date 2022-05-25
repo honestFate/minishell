@@ -61,7 +61,7 @@ int	heredoc_put_str(t_minishell *minishell, char *line, int fd)
 		else
 			write(fd, line[i++], 1);
 	}
-	
+	return (M_OK);
 }
 
 int	heredoc(t_minishell *minishell, int expand, char *delimeter)

@@ -1,13 +1,18 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+# include <term.h>
+# include <sys/termios.h>
+# include <termcap.h>
+# include <stdio.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <fcntl.h>
+# include <limits.h>
+# include <curses.h>
+# include <errno.h>
+# include <signal.h>
+# include <sys/types.h>
+# include <sys/wait.h>
 
 #define READ_END 0
 #define WRITE_END 1
@@ -22,21 +27,21 @@ typedef struct	s_cmd_list
 
 int main(int argc, char *argv[], char *envp[])
 {
-	struct stat buf;
-	int fd = open("TEST", O_CREAT, 0644);
-	fstat(fd, &buf);
-	printf("%d\n", buf.st_mode);
-	printf("%ld\n", buf.st_size);
-	read(0, NULL, 1);
-	struct stat info;
-	if (fstat(fd, &info) != 0)
-		printf("ERROR\n");
-	printf("  inode:   %d\n",   (int) info.st_ino);
-      printf(" dev id:   %d\n",   (int) info.st_dev);
-      printf("   mode:   %08x\n",       info.st_mode);
-      printf("  links:   %d\n",         info.st_nlink);
-      printf("    uid:   %d\n",   (int) info.st_uid);
-      printf("    gid:   %d\n",   (int) info.st_gid);
+	// struct stat buf;
+	// int fd = open("TEST", O_CREAT, 0644);
+	// fstat(fd, &buf);
+	// printf("%d\n", buf.st_mode);
+	// printf("%ld\n", buf.st_size);
+	// read(0, NULL, 1);
+	// struct stat info;
+	// if (fstat(fd, &info) != 0)
+	// 	printf("ERROR\n");
+	// printf("  inode:   %d\n",   (int) info.st_ino);
+    //   printf(" dev id:   %d\n",   (int) info.st_dev);
+    //   printf("   mode:   %08x\n",       info.st_mode);
+    //   printf("  links:   %d\n",         info.st_nlink);
+    //   printf("    uid:   %d\n",   (int) info.st_uid);
+    //   printf("    gid:   %d\n",   (int) info.st_gid);
 	// write(3, "text to fd 3\n", 14);
 	// write(4, "text to fd 4\n", 14);
 	// write(5, "text to fd 5\n", 14);

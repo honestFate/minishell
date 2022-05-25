@@ -9,6 +9,7 @@
 # include <limits.h>
 # include <curses.h>
 # include <errno.h>
+# include <signal.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include "get_next_line.h"
