@@ -34,6 +34,7 @@ int	heredoc_put_str(t_minishell *minishell, char *line, int fd)
 {
 	int		i;
 	char	*var;
+	char	*env_val;
 
 	i = 0;
 	while (line[i])
@@ -50,11 +51,15 @@ int	heredoc_put_str(t_minishell *minishell, char *line, int fd)
 				var = get_word(line[i + 1], "$ ");
 				if (!var)
 					return (M_ERR);
-				
+				env_val = env_get_val(minishell->env_list, var);
+				if (env_val)
+					write(fd, env_val, ft_strlen(env_val));
+				i += ft_strlen(var) + 1;
+				free(var);
 			}
 		}
 		else
-			write(fd, line[i], 1);
+			write(fd, line[i++], 1);
 	}
 	
 }

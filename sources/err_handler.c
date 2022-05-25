@@ -16,7 +16,20 @@ void	print_error(char *cmd, int error)
 	ft_putendl_fd(ft_strerr(error), STDERR_FILENO);
 }
 
-void	fatal_err(t_minishell *minishell, t_pipe_line *pipe_line)
+void	free_redirect(t_redirect **redirect)
+{
+	int	i;
+
+	i = 0;
+	while (redirect[i])
+	{
+		free(redirect[i]->arg2);
+		free(redirect[i]);
+	}
+	free(redirect);
+}
+
+void	free_pipe_line(t_pipe_line *pipe_line)
 {
 	t_pipe_line	*ptr;
 
@@ -25,9 +38,18 @@ void	fatal_err(t_minishell *minishell, t_pipe_line *pipe_line)
 	while (pipe_line)
 	{
 		ptr = pipe_line->prev;
+		free_redirect(pipe_line->redirect_in);
+		free_redirect(pipe_line->redirect_out);
+		free(pipe_line->cmd);
+		free_str_arr(pipe_line->argv);
 		free(pipe_line);
 		pipe_line = ptr;
 	}
+}
+
+void	fatal_err(t_minishell *minishell, t_pipe_line *pipe_line)
+{
+	free_pipe_line(pipe_line);
 	free_str_arr(minishell->env_arr);
 	env_list_clear(minishell->env_list);
 	free(minishell);
