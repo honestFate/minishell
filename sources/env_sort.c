@@ -1,28 +1,36 @@
 #include "minishell.h"
 
-void	shell_sort(char **s, int s_size)
+void select_sort(t_env_list *ptr)
 {
-	int		i;
-	int		j;
-	int		increment;
-	char	*temp;
+	t_env_list	*i;
+	t_env_list	*j;
+	t_env_list	*pos;
+	char	*temp_key;
+	char	*temp_val;
 
-	increment = s_size / 2;
-	while (increment > 0)
+	if (!ptr)
+		return ;
+	i = ptr;
+	while (i->next)
 	{
-		i = 0;
-		while (s[j])
+		pos = i;
+		temp_key = i->key;
+		temp_val = i->val;
+		j = i->next;
+		while(j)
 		{
-			j = i;
-			temp = s[i];
-			while (j >= increment && ft_strcmp(s[j - increment], temp) > 0)
+			if (ft_strcmp(j->key, temp_key) < 0)
 			{
-				s[j] = s[j - increment];
-				j -= increment;
+				pos = j;
+				temp_key = j->key;
+				temp_val = j->val;
 			}
-			s[j] = temp;
+			j = j->next;
 		}
-		increment -= 2;
-		increment /= 2;
+		pos->key = i->key;
+		pos->val = i->val;
+		i->key = temp_key;
+		i->val = temp_val;
+		i = i->next;
 	}
 }

@@ -1,15 +1,14 @@
-CC = gcc
+CC = clang
 INC = ./includes/
 SRC = ./sources/
 OBJ = ./obj/
-C = gcc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -g -fPIE
 INCLUDES = minishell.h color.h
 LIB_DIR = ./libft/
 LIB = libft.a
 
-SRCS =	built_in.c env_copy.c env_sort.c env_utils.c env.c exec_cmd.c minishell.c utils.c history.c\
-		get_next_line.c get_next_line_utils.c
+SRCS =	built_in.c env_sort.c env_utils.c env_utils_2.c env.c exec_cmd.c utils.c history.c\
+		get_next_line.c get_next_line_utils.c find_cmd.c err_handler.c signal.c heredoc.c
 
 OBJS = $(SRCS:%.c=$(OBJ)%.o)
 

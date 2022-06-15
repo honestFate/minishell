@@ -1,71 +1,83 @@
 #include "minishell.h"
 
-int	env_copy(char ***dst, char **env)
+int	env_copy(t_minishell *minishell, char **env)
 {
 	int	i;
 
 	i = 0;
 	while (env[i])
 		++i;
-	*dst = malloc((i + 1) * sizeof(char **));
+	minishell->env_arr = (char **)malloc((i + 1) * sizeof(char *));
 	i = 0;
 	while (env[i])
 	{
-		*dst[i] = ft_strdup(env[i]);
-		if (!*dst[i])
+		minishell->env_arr[i] = ft_strdup(env[i]);
+		if (!minishell->env_arr[i])
 		{
 			while (--i >= 0)
-				free(*dst[i]);
-			free(*dst);
-			return (errno);
+				free(minishell->env_arr[i]);
+			free(minishell->env_arr);
+			return (M_ERR);
 		}
 		++i;
 	}
-	*dst[i] = NULL;
-	return (errno);
+	minishell->env_arr[i] = NULL;
+	return (M_ERR);
 }
 
-void	env_fill_line(char *line, t_env_list *ptr, int dst_size)
+char	*env_create_line(t_env_list *ptr)
 {
-	ft_strlcat(line, ptr->key, dst_size);
-	ft_strlcat(line, "=", dst_size);
-	if (ptr->val)
-		ft_strlcat(line, ptr->val, dst_size);
+	char	*temp;
+	char	*result;
+
+	temp = ft_strjoin(ptr->key, "=");
+	if (!temp)
+		return (NULL);
+	result = ft_strjoin(temp, ptr->val);
+	free(temp);
+	return (result);
 }
 
 int	env_fill_array(t_minishell *minishell)
 {
 	int			i;
-	int			dst_size;
 	t_env_list	*ptr;
 
 	ptr = minishell->env_list;
 	i = 0;
 	while (ptr)
 	{
-		dst_size = ft_strlen(ptr->key);
 		if (ptr->val)
-			dst_size += ft_strlen(ptr->val);
-		++dst_size;
-		minishell->env_arr[i] = (char *)malloc(dst_size * sizeof(char));
-		if (!minishell->env_arr[i])
 		{
-			while (--i >= 0)
-				free(minishell->env_arr[i]);
-			return (errno);
+			minishell->env_arr[i] = env_create_line(ptr);
+			if (!minishell->env_arr[i])
+			{
+				while (--i >= 0)
+					free(minishell->env_arr[i]);
+				return (M_ERR);
+			}
+			++i;
 		}
-		env_fill_line(minishell->env_arr[i], ptr, dst_size);
 		ptr = ptr->next;
-		++i;
 	}
 	minishell->env_arr[i] = NULL;
+	ft_putendl_fd("fill array ok", STDOUT_FILENO);
 	return (0);
 }
 
 int	env_to_array(t_minishell *minishell)
 {
+	int	i;
+
+	i = 0;
 	if (minishell->env_arr)
+	{
+		while (minishell->env_arr[i])
+			free(minishell->env_arr[i++]);
+		free(minishell->env_arr[i]);
 		free(minishell->env_arr);
+	}
+	ft_putendl_fd("free arr", STDOUT_FILENO);
 	minishell->env_arr = (char **)
 			malloc((minishell->env_list_size + 1) * sizeof(char *)); 
 	if (!minishell->env_arr)
@@ -73,15 +85,15 @@ int	env_to_array(t_minishell *minishell)
 	if (!minishell->env_list_size)
 	{
 		minishell->env_arr[0] = NULL;
-		return (0);
+		return (M_OK);
 	}
 	if (env_fill_array(minishell))
 	{
 		free(minishell->env_arr);
 		minishell->env_arr = NULL;
-		return (errno);
+		return (M_ERR);
 	}
-	return (0);
+	return (M_OK);
 }
 
 int	env_to_list(t_minishell *minishell, char **envp)

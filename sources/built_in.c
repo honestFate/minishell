@@ -5,9 +5,12 @@ int	ft_pwd(t_minishell *minishell, char **argv)
     char	path[PATH_MAX + 1];
 
 	(void)minishell;
-	if (!getcwd(path, PATH_MAX + 1))
+	(void)argv;
+	if (getcwd(path, PATH_MAX + 1) != NULL)
 		printf("%s\n", path);
-	return (errno);
+	else
+		return(M_ERR);
+	return (M_OK);
 }
 
 int	ft_cd(t_minishell *minishell, char **argv)
@@ -21,7 +24,7 @@ int	ft_cd(t_minishell *minishell, char **argv)
 	if (argv[2])
 		return (TOO_MANY_ARGS);
 	if (!getcwd(current_path, PATH_MAX + 1))
-		return (errno);
+		return (M_ERR);
 	if (argv[1][0] == '/')
 		target_path = ft_strdup(argv[1]);
 	else
@@ -29,15 +32,15 @@ int	ft_cd(t_minishell *minishell, char **argv)
 		ft_strlcat(current_path, "/", PATH_MAX + 2);
 		target_path = ft_strjoin(current_path, argv[1]);
 		if (!target_path)
-			return (errno);
+			return (M_ERR);
 		printf("%s\n", target_path); //debug
 	}
 	chdir(target_path);
 	if (!errno)
-		env_change_val(minishell->env_list, "PWD", target_path);
+		envlist_change_val(minishell->env_list, "PWD", target_path);
 	if (target_path)
 		free(target_path);
-	return (errno);
+	return (M_OK);
 }
 
 int	ft_env(t_minishell *minishell, char **argv)
@@ -49,8 +52,7 @@ int	ft_env(t_minishell *minishell, char **argv)
 	ptr = minishell->env_list;
 	while (ptr)
 	{
-		printf("%s=%s\n", ptr->key,
-				ptr->val);
+		printf("%s=%s\n", ptr->key, ptr->val);
 		ptr = ptr->next;
 	}
 	return (0);
@@ -61,54 +63,39 @@ int	ft_echo(t_minishell *minishell, char **argv)
 	int	i;
 	int	flag;
 
-	i = 0;
+	(void)minishell;
+	i = 1;
 	flag = 0;
-	if (strcmp(argv[1], "-n"))
+	while (argv[i] && !strcmp(argv[i], "-n"))
 	{
 		++flag;
 		++i;
 	}
 	if (argv[i])
 	{
-		printf("%s", argv[i]);
+		ft_putstr_fd(argv[i], STDOUT_FILENO);
 		++i;
 		while (argv[i])
 		{
-			printf(" %s", argv[i]);
+			ft_putchar_fd(' ', STDOUT_FILENO);
+			ft_putstr_fd(argv[i], STDOUT_FILENO);
 			++i;
 		}
 	}
 	if (!flag)
-		printf("\n");
-	return (0);
+		ft_putchar_fd('\n', STDOUT_FILENO);
+	return (M_OK);
 }
 
 int	ft_unset(t_minishell *minishell, char **argv)
 {
-	int			i;
-	int			j;
-	t_env_list	*ptr;
+	int	i;
 
-	ptr = minishell->env_list;
-	j = 0;
-	while (ptr)
+	i = 1;
+	while (argv[i])
 	{
-		i = j;
-		if (!argv[i])
-			break ;
-		while (argv[i])
-		{
-			if (!strcmp(ptr->key, argv[i]))
-			{
-				if (ptr == minishell->env_list)
-					minishell->env_list = ptr->next;
-				ptr = env_del_elem(ptr);
-				++j;
-				break ;
-			}
-			++i;
-		}
-		ptr = ptr->next;
+		envlist_delone(minishell, argv[i]);
+		++i;
 	}
 	return (M_OK);
 }
@@ -118,6 +105,7 @@ int	ft_exit(t_minishell *minishell, char **argv) //need to make better parser
 	int				i;
 	unsigned char	exit_status;
 
+	(void)minishell;
 	i = 0;
 	if (!argv[1])
 		exit(EXIT_SUCCESS);
@@ -149,37 +137,29 @@ int	ft_exit(t_minishell *minishell, char **argv) //need to make better parser
 
 int	ft_export(t_minishell *minishell, char **argv)
 {
-	int	i;
-	int	j;
+	t_env_list	*ptr;
 
-	i = 1;
-	if (argv[i])
+	if (argv[1])
 	{
-		while (argv[i])
-		{
-			if (envlist_add_var(minishell, argv))
-				return (errno);
-			++i;
-		}
+		ft_putendl_fd("export put argv to list", STDOUT_FILENO);
+		if (envlist_add_var(minishell, argv))
+			return (M_ERR);
 		return (M_OK);
 	}
-	if (env_to_array(minishell))
-		return (errno);
-	shell_sort(minishell->env_arr, minishell->env_list_size);
-	while (minishell->env_arr[i])
+	for (t_env_list *i = minishell->env_list; i != NULL; i = i->next)
 	{
-		j = 0;
-		printf("declare -x ");
-		while (minishell->env_arr[i][j] != '=' && minishell->env_arr[i][j])
-			printf("%c", minishell->env_arr[i][j++]);
-		if (minishell->env_arr[i][j])
-		{
-			printf("%c\"", minishell->env_arr[i][j++]);
-			while (minishell->env_arr[i][j])
-				printf("%c", minishell->env_arr[i][j++]);
-			printf("\"\n");
-		}
-		++i;
+		printf("%s - %s\n", i->key, i->val);
 	}
+	ft_putendl_fd("shell sort", STDOUT_FILENO);
+	select_sort(minishell->env_list);
+	ft_putendl_fd("shell sort end", STDOUT_FILENO);
+	ptr = minishell->env_list;
+	while (ptr)
+	{
+		if (ft_strcmp(ptr->key, "_") != 0)
+			printf("declare -x %s=\"%s\"\n", ptr->key, ptr->val);
+		ptr = ptr->next;
+	}
+	ft_putendl_fd("ok", STDOUT_FILENO);
 	return (M_OK);
 }

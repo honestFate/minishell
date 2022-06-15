@@ -1,4 +1,5 @@
 #ifndef MINISHELL_H
+#define _POSIX_C_SOURCE 199309L
 # include <term.h>
 # include <stdio.h>
 # include <readline/readline.h>
@@ -12,6 +13,8 @@
 # include <signal.h>
 # include <sys/types.h>
 # include <sys/wait.h>
+# include <sys/stat.h>
+# include <signal.h>
 # include "get_next_line.h"
 # include "libft.h"
 # include "color.h"
@@ -36,10 +39,11 @@
 # define M_ERR 1
 # define SIMPLE 0
 # define PIPE 1
+# define PIPE_FIRST 2
 # define REDIRECT_IN 0
 # define REDIRECT_HEREDOC 1
 # define REDIRECT_OUT 2
-# define REDIRECT_OUT_APPEND 2
+# define REDIRECT_OUT_APPEND 3
 
 //FOR TEST
 
@@ -49,6 +53,8 @@ typedef struct	s_redirect
 	int		arg1;
 	char	*arg2;
 	int		fd;
+	char	*fname;
+	int		expand;
 }				t_redirect;
 
 typedef struct	s_pipe_line
@@ -63,22 +69,40 @@ typedef struct	s_pipe_line
 }				t_pipe_line;
 //END
 
-typedef struct	s_env_list
+typedef struct	s_env_list t_env_list;
+struct s_env_list
 {
 	char				*key;
 	char				*val;
-	struct env_list_s	*next;
-}				t_env_list;
+	t_env_list	*next;
+};
 
+typedef struct	s_std_backup
+{
+	int	stdin_backup;
+	int	stdout_backup;
+	int	stderr_backup;
+}				t_std_backup;
+
+typedef struct	s_pipe_desc
+{
+	int exec_type;
+	int	fd_in;
+	int	fd_out;
+	int	fd_to_close;
+}				t_pipe_desc;
+
+typedef struct	s_minishell t_minishell;
 typedef struct	s_minishell
 {
+	t_std_backup	std_backup;
 	t_env_list	*env_list;
 	int			env_list_size;
 	char		**env_arr;
 	char		*history_file;
 	int			exit_status;
 	int			history_fd;
-	int			(*built_in[BIN_NUM])(char **argv, t_minishell *minishell);
+	int			(*built_in[BIN_NUM])(t_minishell *minishell, char **argv);
 }				t_minishell;
 
 //built-in
@@ -91,8 +115,8 @@ int	ft_unset(t_minishell *minishell, char **argv);
 int	ft_exit(t_minishell *minishell, char **argv);
 
 //env
-int	env_copy(char ***dst, char **env);
-void	env_fill_line(char *line, t_env_list *ptr, int dst_size);
+int	env_copy(t_minishell *minishell, char **env);
+char	*env_create_line(t_env_list *ptr);
 int	env_fill_array(t_minishell *minishell);
 int	env_to_array(t_minishell *minishell);
 int	env_to_list(t_minishell *minishell, char **envp);
@@ -100,15 +124,17 @@ t_env_list	*new_env_elem(char *env_var);
 int	env_set_key(t_env_list *elem, char *key);
 int	env_set_val(t_env_list *elem, char *val);
 void    env_list_clear(t_minishell *shell);
-t_env_list	*env_del_elem(t_env_list *env_list);
+void	env_del_elem(t_env_list *env_list);
+void	envlist_delone(t_minishell *minishell, char *key);
 int	envlist_add_var(t_minishell *minishell, char **argv);
 void	env_add_back(t_env_list **env_list, t_env_list *new_elem);
-void	shell_sort(char **s, int s_size);
+void select_sort(t_env_list *ptr);
 void	set_increment(int *arr);
-int		env_change_val(t_env_list *env_list, char *key, char *new_val);
+int		envlist_change_val(t_env_list *env_list, char *key, char *new_val);
+int	envarr_change_val(char **env, char *key, char *val);
 
 //exec
-int	find_cmd(char *cmd, t_env_list *env_list, char *path_to_cmd);
+char	*find_cmd(char *cmd, t_env_list *env_list);
 
 //history
 int	open_history_file(char *home_path);
@@ -122,8 +148,15 @@ int	check_overflow(char *s);
 void	free_str_arr(char **strings);
 
 //err_handler
+void	free_pipe_line(t_pipe_line *pipe_line);
 void	print_error(char *cmd, int error);
 char	*ft_getenv(t_env_list *env_list, char *name);
 void	fatal_err(t_minishell *minishell, t_pipe_line *pipe_line);
+
+//signal
+int	sighandler_set(int mode);
+
+//heredoc
+char	*heredoc(t_minishell *minishell, int expand, char *delimeter, int index);
 
 #endif
