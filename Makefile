@@ -6,6 +6,7 @@ CFLAGS = -Wall -Wextra -g -fPIE
 INCLUDES = minishell.h color.h
 LIB_DIR = ./libft/
 LIB = libft.a
+RL_LIB = /Users/ndillon/.brew/Cellar/readline/8.1.2/lib/*.a
 
 SRCS =	built_in.c env_sort.c env_utils.c env_utils_2.c env.c exec_cmd.c utils.c history.c\
 		get_next_line.c get_next_line_utils.c find_cmd.c err_handler.c signal.c heredoc.c
@@ -18,7 +19,7 @@ all:	$(NAME)
 
 $(NAME): $(OBJS)
 	@make -C $(LIB_DIR)
-	$(CC) -o $(NAME) $(OBJS) $(CFLAGS) -lreadline -ltermcap $(LIB_DIR)$(LIB)
+	$(CC) -o $(NAME) $(OBJS) $(CFLAGS) -ltermcap $(LIB_DIR)$(LIB) $(RL_LIB)
 
 obj/%.o: $(SRC)%.c $(INCLUDES:%=$(INC)%)
 	@mkdir -p obj

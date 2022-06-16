@@ -93,11 +93,14 @@ char	*heredoc(t_minishell *minishell, int expand, char *delimeter, int index)
 	while (1)
 	{
 		line = readline(TERM_CYAN "> " TERM_RESET);
-		if (!line)
+		if (!isatty(STDIN_FILENO))
 		{
-			ft_putendl_fd("minishell: предупреждение: блок here-document разделён знаком конца файла", 1);
-			break;
+			ft_putendl_fd(line, 1);
+			free(line);
+			return (NULL);
 		}
+		if (!line)
+			break;
 		if (!ft_strcmp(line, delimeter))
 		{
 			free(line);

@@ -38,20 +38,50 @@ typedef struct	s_cmd_list
 // 	signal(SIGQUIT, signal_handler);
 // }
 
+void	sig_default_mode(int signal)
+{
+	printf("Process - %d, sig - %d", getpid(), signal);
+}
+
+int	sighandler_set()
+{
+	struct sigaction	sig_default;
+	struct sigaction	sig_quit;
+
+	memset(&sig_default, 0, sizeof(sig_default));
+	sig_default.sa_handler = sig_default_mode;
+	sigaction(SIGINT, &sig_default, NULL);
+	memset(&sig_quit, 0, sizeof(sig_quit));
+	sig_quit.sa_handler = sig_default_mode;
+	sigaction(SIGINT, &sig_quit, NULL);
+}
+
 int main(int argc, char *argv[], char *envp[])
 {
-	/*char	*line;
+	(void)argc;
 
-	signal(SIGQUIT, signal_handler);
-	while (1)
-    {
-        line = readline("$minishell ");
-        if (!line)
-            break ;
-		add_history(line);
-		free(line);
+	sighandler_set();
+	pid_t pid = fork();
+	printf("Process - %d\n", pid);
+	if (pid > 0)
+	{
+		waitpid(pid, NULL, WUNTRACED);
 	}
-	rl_clear_history();*/
+	else
+	{
+		while (1);
+	}
+	// char	*line;
+
+	// while (1)
+    // {
+    //     line = readline("$minishell ");
+    //     if (!line)
+    //         break ;
+	// 	add_history(line);
+	// 	free(line);
+	// }
+	// rl_clear_history();
 	// struct stat buf;
 	// int fd = open("TEST", O_CREAT, 0644);
 	// fstat(fd, &buf);
@@ -73,7 +103,7 @@ int main(int argc, char *argv[], char *envp[])
 	/*errno = 100;
 	access("minihell", F_OK);
 	printf("%s\n", strerror(errno));*/
-	int i = 0;
+	/*int i = 0;
 	(void)argc;
 	(void)argv;
 	char *s = getenv("HOME");
@@ -83,13 +113,13 @@ int main(int argc, char *argv[], char *envp[])
 		printf("%s\n", envp[i]);
 		++i;
 	}
-	int fd = open(".", __O_TMPFILE | O_RDWR, 0777);
+	int fd = open(".", O_TMPFILE | O_RDWR, 0777);
 	write(fd, "test", 4);
 	char buf[4];
 	int t = read(fd, buf, 4);
 	printf("%d", t);
 	//write(STDOUT_FILENO, buf, 4);
-	close(fd);
+	close(fd);*/
 	/*int p[2];
 
 	if (pipe(p) < 0)

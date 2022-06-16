@@ -54,11 +54,11 @@ int	check_overflow(char *s)
 				return (M_OK);
 			if (*(s + 2))
 				return (M_ERR);
-			if (i > INT64_MAX / 10)
+			if (i > LLONG_MAX / 10)
 				return (M_ERR);
-			if (i == INT64_MAX / 10 && *(s + 1) - 48 > 8 && flag)
+			if (i == LLONG_MAX / 10 && *(s + 1) - 48 > 8 && flag)
 				return (M_ERR);
-			if (i == INT64_MAX / 10 && *(s + 1) - 48 > 7 && !flag)
+			if (i == LLONG_MAX / 10 && *(s + 1) - 48 > 7 && !flag)
 				return (M_ERR);
 			return (M_OK);
 		}

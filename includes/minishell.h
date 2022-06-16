@@ -44,7 +44,9 @@
 # define REDIRECT_HEREDOC 1
 # define REDIRECT_OUT 2
 # define REDIRECT_OUT_APPEND 3
-
+# define DEFAULT_MODE 0
+# define HEREDOC_MODE 1
+# define EXEC_MODE 2
 //FOR TEST
 
 typedef struct	s_redirect

@@ -45,7 +45,9 @@ int	make_redirect(t_minishell *minishell, t_redirect **redirect, int index)
 		ft_putendl_fd(redirect[i]->arg2, 2);
 		if (redirect[i]->type == REDIRECT_HEREDOC)
 		{
+			sighandler_set(HEREDOC_MODE);
 			redirect[i]->fname = heredoc(minishell, 1, redirect[i]->arg2, index);
+			sighandler_set(DEFAULT_MODE);
 			if (!redirect[i]->fname)
 				return (M_ERR);
 			ft_putendl_fd(redirect[i]->fname, 1);
@@ -150,7 +152,7 @@ int safe_close(int fd)
 	return (M_OK);
 }
 
-int	std_copy(t_std_backup *std_backup)
+int	stdbackup_copy(t_std_backup *std_backup)
 {
 	std_backup->stdin_backup = dup(STDIN_FILENO);
 	if (std_backup->stdin_backup >= 0)
@@ -171,12 +173,17 @@ int	std_copy(t_std_backup *std_backup)
 	return (errno);
 }
 
-int std_set(t_std_backup *std_backup)
+int stdbackup_set(t_std_backup *std_backup)
 {
 	if (dup2(std_backup->stdin_backup, STDIN_FILENO) < 0
 		|| dup2(std_backup->stdout_backup, STDOUT_FILENO) < 0
 		|| dup2(std_backup->stderr_backup, STDERR_FILENO) < 0)
 		return (M_ERR);
+	return (M_OK);
+}
+
+int stdbackup_close(t_std_backup *std_backup)
+{
 	if (safe_close(std_backup->stdin_backup)
 		|| safe_close(std_backup->stdout_backup)
 		|| safe_close(std_backup->stderr_backup))
@@ -198,6 +205,7 @@ int	exec_in_fork(t_minishell *minishell, t_pipe_line *pipe_line, t_pipe_desc *pi
 	}
 	if (pipe_line->pid == 0)
 	{
+		sighandler_set(EXEC_MODE);
 		safe_close(pipe_desc->fd_to_close);
 		exec_cmd(minishell, pipe_line, pipe_desc->fd_in, pipe_desc->fd_out);
 	}
@@ -278,16 +286,16 @@ int exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 	t_pipe_line	*ptr;
 
 	exit_status = 0;
-	if (pipeline_set_fd(minishell, pipe_line))
+	if (stdbackup_copy(&std_backup))
 		fatal_err(minishell, pipe_line);
-	if (!pipe_line->next && is_builtin(pipe_line->cmd) >= 0)
+	if (pipeline_set_fd(minishell, pipe_line))
 	{
-		if (std_copy(&std_backup))
+		if (isatty(STDIN_FILENO) || stdbackup_set(&std_backup))
 			fatal_err(minishell, pipe_line);
-		exit_status = exec_cmd(minishell, pipe_line, -1, -1);
-		if (std_set(&std_backup))
-			fatal_err(minishell, pipe_line);
+		return (1);
 	}
+	if (!pipe_line->next && is_builtin(pipe_line->cmd) >= 0)
+		exit_status = exec_cmd(minishell, pipe_line, -1, -1);
 	else
 	{
 		if (pipe_line->next)
@@ -307,8 +315,20 @@ int exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 			ptr = ptr->next;
 		}
 	}
-	//free_pipe_line(pipe_line);
-	//sleep(100000);
+	if (stdbackup_set(&std_backup) || stdbackup_close(&std_backup))
+		fatal_err(minishell, pipe_line);
+	printf("%d\n", exit_status);
+	if (WIFEXITED(exit_status))
+	{
+		printf("Не ноль\n");
+		if (WIFSIGNALED(exit_status))
+		{
+			printf("Сигнал - %d\n", WEXITSTATUS(exit_status));
+			return (WEXITSTATUS(exit_status) + 128);
+		}
+		printf("Не сигнал - %d\n", WEXITSTATUS(exit_status));
+		return (WEXITSTATUS(exit_status));
+	}
 	return (exit_status);
 }
 
@@ -323,7 +343,7 @@ int main(int argc, char *argv[], char *envp[])
 {
 	(void)argc;
 	(void)argv;
-	sighandler_set(0);
+	rl_catch_signals = 0;
 	t_minishell minishell = {.exit_status = 0};
 	env_copy(&minishell, envp);
 	if (env_to_list(&minishell, envp))
@@ -340,6 +360,9 @@ int main(int argc, char *argv[], char *envp[])
 	t_pipe_line *pipe_line = NULL;
 	t_pipe_line *temp;
 	int i = 0;
+	sighandler_set(DEFAULT_MODE);
+	//sighandler_set(HEREDOC_MODE);
+	//sighandler_set(DEFAULT_MODE);
 	while (1)
 	{
 		is_pipe = (char *)1;
@@ -348,7 +371,10 @@ int main(int argc, char *argv[], char *envp[])
 			i = 0;
 			cmd_line = readline("> ");
 			if (!cmd_line)
+			{
+				printf("exit");
 				return (M_OK);
+			}
 			cmd_argv = readline("argv> ");
 			redirect_in = readline("redirect in [from to type] ");
 			redirect_out = readline("redirect out [from to type] ");
