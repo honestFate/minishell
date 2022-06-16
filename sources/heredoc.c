@@ -19,14 +19,11 @@ char	*get_word(char *str)
 	i = 0;
 	while (str[i])
 	{
-		if (ft_isalnum(str[i]) || str[i] == ' ' || str[i] == '$')
+		if (!ft_isalnum(str[i]) && str[i] != '_')
 			break ;
 		++i;
 	}
-	word = malloc((i + 1) * sizeof(char));
-	if (!word)
-		return (NULL);
-	ft_strlcpy(word, str, i + 1);
+	word = ft_substr(str, 0, i);
 	return (word);
 }
 
@@ -97,7 +94,10 @@ char	*heredoc(t_minishell *minishell, int expand, char *delimeter, int index)
 	{
 		line = readline(TERM_CYAN "> " TERM_RESET);
 		if (!line)
-			break ;
+		{
+			ft_putendl_fd("minishell: предупреждение: блок here-document разделён знаком конца файла", 1);
+			break;
+		}
 		if (!ft_strcmp(line, delimeter))
 		{
 			free(line);
