@@ -36,10 +36,12 @@ int	ft_cd(t_minishell *minishell, char **argv)
 		printf("%s\n", target_path); //debug
 	}
 	chdir(target_path);
+	write(1, "pwd change\n", 12);
 	if (!errno)
 		envlist_change_val(minishell->env_list, "PWD", target_path);
 	if (target_path)
 		free(target_path);
+	write(1, "pwd change end\n", 16);
 	return (M_OK);
 }
 
@@ -52,7 +54,13 @@ int	ft_env(t_minishell *minishell, char **argv)
 	ptr = minishell->env_list;
 	while (ptr)
 	{
-		printf("%s=%s\n", ptr->key, ptr->val);
+		if (ptr->val)
+		{
+			ft_putstr_fd(ptr->key, STDOUT_FILENO);
+			ft_putchar_fd('=', STDOUT_FILENO);
+			ft_putstr_fd(ptr->val, STDOUT_FILENO);
+			ft_putchar_fd('\n', STDOUT_FILENO);
+		}
 		ptr = ptr->next;
 	}
 	return (0);

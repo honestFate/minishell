@@ -21,6 +21,7 @@ int	env_set_val(t_env_list *elem, char *val)
 	if (elem->val)
 		free(elem->val);
 	elem->val = val;
+	ft_putendl_fd(elem->val, 1);
 	return (M_OK);
 }
 
@@ -32,6 +33,7 @@ t_env_list	*new_env_elem(char *env_var)
 	char		*env_val;
 
 	del_pos = 0;
+	env_val = NULL;
 	while (env_var[del_pos] != '=' && env_var[del_pos])
 		del_pos++;
 	env_key = ft_substr(env_var, 0, del_pos);
@@ -50,6 +52,8 @@ t_env_list	*new_env_elem(char *env_var)
 	if (!elem)
 		return (NULL);
 	elem->next = NULL;
+	elem->key = NULL;
+	elem->val = NULL;
 	if (env_set_key(elem, env_key))
 	{
 		free(elem);

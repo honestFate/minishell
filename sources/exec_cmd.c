@@ -125,7 +125,7 @@ int	exec_cmd(t_minishell *minishell, t_pipe_line *pipe_line, int fd_in, int fd_o
 			return (M_ERR);
 		close(fd_out);
 	}
-	ft_putendl_fd(pipe_line->cmd, 1);
+	//ft_putendl_fd(pipe_line->cmd, 1);
 	if (cmd_redirect(pipe_line->redirect_in)
 		|| cmd_redirect(pipe_line->redirect_out))
 		return (M_ERR);
@@ -133,6 +133,10 @@ int	exec_cmd(t_minishell *minishell, t_pipe_line *pipe_line, int fd_in, int fd_o
 	if (built_in >= 0)
 		return (minishell->built_in[built_in](minishell, pipe_line->argv));
 	path_to_cmd = find_cmd(pipe_line->cmd, minishell->env_list);
+	ft_putendl_fd("path_to_cmd - ", 1);
+	ft_putendl_fd(path_to_cmd, 1);
+	if (access(path_to_cmd, X_OK))
+		ft_putendl_fd("access ok", 1);
 	if (path_to_cmd == NULL)
 	{
 		printf("find errno - %s\n", strerror(errno));
@@ -342,22 +346,28 @@ void	safe_free(void *data)
 
 int set_pwd(t_minishell *minishell)
 {
-	char		path[PATH_MAX + 1];
+	char		*path;
 	char		*pwd;
 	t_env_list	*pwd_var;
 
+	path = (char *)malloc((PATH_MAX + 1) * sizeof(char));
 	if (getcwd(path, PATH_MAX + 1) == NULL)
+	{
+		free(path);
 		return(M_ERR);
+	}
 	if (ft_getenv(minishell->env_list, "PWD") == NULL)
 	{
 		pwd = ft_strjoin("PWD=", path);
+		free(path);
+		ft_putendl_fd(pwd, 1);
 		if (!pwd)
 			return(M_ERR);
 		pwd_var = new_env_elem(pwd);
 		free(pwd);
 		if (!pwd_var)
 			return (M_ERR);
-		env_add_back(minishell->env_list, pwd_var);
+		env_add_back(&minishell->env_list, pwd_var);
 	}
 	else
 		return(envlist_change_val(minishell->env_list, "PWD", path));
@@ -387,7 +397,7 @@ int set_shlvl(t_minishell *minishell)
 	free(shlvl);
 	if (!shlvl_var)
 		return (M_ERR);
-	env_add_back(minishell->env_list, shlvl_var);
+	env_add_back(&minishell->env_list, shlvl_var);
 	return (M_OK);
 }
 
@@ -396,12 +406,12 @@ int set_underscore(t_minishell *minishell)
 	t_env_list	*underscore_var;
 
 	if (ft_getenv(minishell->env_list, "_"))
-		return (envlist_change_val(minishell->env_list, "_", "⚣minishell⚣"));
-	underscore_var = new_env_elem("_");
+		return (M_OK);
+	underscore_var = new_env_elem("_=⚣minishell⚣");
 	if (!underscore_var)
 		return (M_ERR);
-	env_add_back(minishell->env_list, underscore_var);
-	return (M_ERR);
+	env_add_back(&minishell->env_list, underscore_var);
+	return (M_OK);
 }
 
 int set_oldpwd(t_minishell *minishell)
@@ -413,7 +423,7 @@ int set_oldpwd(t_minishell *minishell)
 	oldpwd_var = new_env_elem("OLDPWD");
 	if (!oldpwd_var)
 		return (M_ERR);
-	env_add_back(minishell->env_list, oldpwd_var);
+	env_add_back(&minishell->env_list, oldpwd_var);
 	return (M_ERR);
 }
 
@@ -444,7 +454,7 @@ int main(int argc, char *argv[], char *envp[])
 		printf("ENV TO LIST FAILED %s\n", NULL);
 		exit(2);
 	}
-	
+	default_env(&minishell);
 	builtin_arr_init(&minishell);
 	char *cmd_line;
 	char *cmd_argv;

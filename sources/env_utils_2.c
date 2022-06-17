@@ -2,6 +2,7 @@
 
 int	envlist_change_val(t_env_list *env_list, char *key, char *new_val)
 {
+	ft_putendl_fd(new_val, 1);
 	while (env_list)
 	{
 		if (!strcmp(env_list->key, key))
