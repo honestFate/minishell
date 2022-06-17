@@ -23,22 +23,22 @@ void	sig_heredoc_mode(int signal)
 	}
 }
 
-void	sig_exit(int signal)
+/*void	sig_exit(int signal)
 {
 	if (signal == SIGINT)
 	{
 		exit(100);
 	}
-}
+}*/
 
 int	sig_quit(int mode)
 {
 	struct sigaction	sig_default;
 
 	ft_memset(&sig_default, 0, sizeof(sig_default));
-	if (mode == DEFAULT_MODE || mode == HEREDOC_MODE)
+	if (mode == DEFAULT_MODE || mode == HEREDOC_MODE || mode == EXEC_MODE_PARENT)
 		sig_default.sa_handler = SIG_IGN;
-	else if (mode == EXEC_MODE)
+	else if (mode == EXEC_MODE_CHILD)
 		sig_default.sa_handler = SIG_DFL;
 	else
 		return (M_ERR);
@@ -56,8 +56,10 @@ int	sighandler_set(int mode)
 		sig_default.sa_handler = sig_default_mode;
 	else if (mode == HEREDOC_MODE)
 		sig_default.sa_handler = sig_heredoc_mode;
-	else if (mode == EXEC_MODE)
-		sig_default.sa_handler = sig_exit;
+	else if (mode == EXEC_MODE_PARENT)
+		sig_default.sa_handler = SIG_IGN;
+	else if (mode == EXEC_MODE_CHILD)
+		sig_default.sa_handler = SIG_DFL;
 	else
 		return (M_ERR);
 	//sigaddset(&set, SIGQUIT);

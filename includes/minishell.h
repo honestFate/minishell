@@ -46,9 +46,10 @@
 # define REDIRECT_OUT_APPEND 3
 # define DEFAULT_MODE 0
 # define HEREDOC_MODE 1
-# define EXEC_MODE 2
+# define EXEC_MODE_PARENT 2
+# define EXEC_MODE_CHILD 3
 //FOR TEST
-
+volatile int g_exit_status;
 typedef struct	s_redirect
 {
 	int		type;

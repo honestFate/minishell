@@ -196,6 +196,7 @@ int	exec_in_fork(t_minishell *minishell, t_pipe_line *pipe_line, t_pipe_desc *pi
 	pipe_line->pid = fork();
 	if (pipe_line->pid > 0)
 	{
+		sighandler_set(EXEC_MODE_PARENT);
 		ft_putendl_fd("MAIN", 1);
 		ft_putendl_fd(pipe_line->cmd, 1);
 		if (cmd_redirect_close(pipe_line->redirect_in)
@@ -205,7 +206,7 @@ int	exec_in_fork(t_minishell *minishell, t_pipe_line *pipe_line, t_pipe_desc *pi
 	}
 	if (pipe_line->pid == 0)
 	{
-		sighandler_set(EXEC_MODE);
+		sighandler_set(EXEC_MODE_CHILD);
 		safe_close(pipe_desc->fd_to_close);
 		exec_cmd(minishell, pipe_line, pipe_desc->fd_in, pipe_desc->fd_out);
 	}
@@ -318,6 +319,7 @@ int exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 	if (stdbackup_set(&std_backup) || stdbackup_close(&std_backup))
 		fatal_err(minishell, pipe_line);
 	printf("%d\n", exit_status);
+	sighandler_set(DEFAULT_MODE);
 	if (WIFEXITED(exit_status))
 	{
 		printf("Не ноль\n");
@@ -338,12 +340,103 @@ void	safe_free(void *data)
 		free(data);
 }
 
+int set_pwd(t_minishell *minishell)
+{
+	char		path[PATH_MAX + 1];
+	char		*pwd;
+	t_env_list	*pwd_var;
+
+	if (getcwd(path, PATH_MAX + 1) == NULL)
+		return(M_ERR);
+	if (ft_getenv(minishell->env_list, "PWD") == NULL)
+	{
+		pwd = ft_strjoin("PWD=", path);
+		if (!pwd)
+			return(M_ERR);
+		pwd_var = new_env_elem(pwd);
+		free(pwd);
+		if (!pwd_var)
+			return (M_ERR);
+		env_add_back(minishell->env_list, pwd_var);
+	}
+	else
+		return(envlist_change_val(minishell->env_list, "PWD", path));
+	return (M_OK);
+}
+
+int set_shlvl(t_minishell *minishell)
+{
+	char		*lvl;
+	char		*shlvl;
+	t_env_list	*shlvl_var;
+
+	lvl = ft_getenv(minishell->env_list, "SHLVL");
+	if (lvl == NULL)
+		shlvl = ft_strdup("SHLVL=1");
+	else
+	{
+		lvl = ft_itoa(ft_atoi(lvl) + 1);
+		if (!lvl)
+			return(M_ERR);
+		shlvl = ft_strjoin("SHLVL=", lvl);
+		free(lvl);
+	}
+	if (!shlvl)
+		return(M_ERR);
+	shlvl_var = new_env_elem(shlvl);
+	free(shlvl);
+	if (!shlvl_var)
+		return (M_ERR);
+	env_add_back(minishell->env_list, shlvl_var);
+	return (M_OK);
+}
+
+int set_underscore(t_minishell *minishell)
+{
+	t_env_list	*underscore_var;
+
+	if (ft_getenv(minishell->env_list, "_"))
+		return (envlist_change_val(minishell->env_list, "_", "⚣minishell⚣"));
+	underscore_var = new_env_elem("_");
+	if (!underscore_var)
+		return (M_ERR);
+	env_add_back(minishell->env_list, underscore_var);
+	return (M_ERR);
+}
+
+int set_oldpwd(t_minishell *minishell)
+{
+	t_env_list	*oldpwd_var;
+
+	if (ft_getenv(minishell->env_list, "OLDPWD"))
+		return (envlist_delone(minishell, "OLDPWD"), M_OK);
+	oldpwd_var = new_env_elem("OLDPWD");
+	if (!oldpwd_var)
+		return (M_ERR);
+	env_add_back(minishell->env_list, oldpwd_var);
+	return (M_ERR);
+}
+
+int	default_env(t_minishell *minishell)
+{
+	if (set_pwd(minishell))
+		return (M_ERR);
+	if (set_shlvl(minishell))
+		return (M_ERR);
+	if (set_underscore(minishell))
+		return (M_ERR);
+	if (set_oldpwd(minishell))
+		return (M_ERR);
+	return (M_OK);
+}
+
 //TEST
 int main(int argc, char *argv[], char *envp[])
 {
 	(void)argc;
 	(void)argv;
 	rl_catch_signals = 0;
+	g_exit_status = 0;
 	t_minishell minishell = {.exit_status = 0};
 	env_copy(&minishell, envp);
 	if (env_to_list(&minishell, envp))
@@ -351,6 +444,7 @@ int main(int argc, char *argv[], char *envp[])
 		printf("ENV TO LIST FAILED %s\n", NULL);
 		exit(2);
 	}
+	
 	builtin_arr_init(&minishell);
 	char *cmd_line;
 	char *cmd_argv;
@@ -372,7 +466,7 @@ int main(int argc, char *argv[], char *envp[])
 			cmd_line = readline("> ");
 			if (!cmd_line)
 			{
-				printf("exit");
+				printf("exit\n");
 				return (M_OK);
 			}
 			cmd_argv = readline("argv> ");

@@ -34,16 +34,17 @@ t_env_list	*new_env_elem(char *env_var)
 	del_pos = 0;
 	while (env_var[del_pos] != '=' && env_var[del_pos])
 		del_pos++;
-	if (!env_var[del_pos])
-		return (NULL);
 	env_key = ft_substr(env_var, 0, del_pos);
 	if (!env_key)
 		return (NULL);
-	env_val = ft_substr(env_var, del_pos + 1, ft_strlen(env_var));
-	if (!env_val)
+	if (env_var[del_pos])
 	{
-		free(env_key);
-		return (NULL);
+		env_val = ft_substr(env_var, del_pos + 1, ft_strlen(env_var));
+		if (!env_val)
+		{
+			free(env_key);
+			return (NULL);
+		}
 	}
 	elem = (t_env_list *)malloc(sizeof(t_env_list));
 	if (!elem)
