@@ -156,7 +156,7 @@ void	free_str_arr(char **strings);
 void	free_pipe_line(t_pipe_line *pipe_line);
 void	print_error(char *cmd, int error, char *arg);
 char	*ft_getenv(t_env_list *env_list, char *name);
-void	fatal_err(t_minishell *minishell, t_pipe_line *pipe_line);
+void	fatal_err(t_minishell *minishell, t_pipe_line *pipe_line, int err);
 
 //signal
 int	sighandler_set(int mode);

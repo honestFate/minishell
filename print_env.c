@@ -38,28 +38,22 @@ typedef struct	s_cmd_list
 // 	signal(SIGQUIT, signal_handler);
 // }
 
-char *new_str(char **s)
-{
-	*s = malloc(30);
-	(*s)[0] = 'o';
-	(*s)[1] = 'k';
-	(*s)[2] = '\0';
-	printf("%s\n", *s);
-	return(*s);
-}
+// char *new_str(char **s)
+// {
+// 	*s = malloc(30);
+// 	(*s)[0] = 'o';
+// 	(*s)[1] = 'k';
+// 	(*s)[2] = '\0';
+// 	printf("%s\n", *s);
+// 	return(*s);
+// }
 
 int main(int argc, char *argv[], char *envp[])
 {
-	(void)argc;
-
-	char	*line;
-	line = NULL;
-	char *s = new_str(&line);
-	write(1, line + 0, 1);
-	write(1, line + 1, 1);
-	write(1, line + 2, 1);
-	printf("%s\n", line);
-	printf("%s\n", s);
+	access("/bin/ls", X_OK);
+	printf("errno is - %d\n", errno);
+	printf("errno meaning - %s\n", strerror(errno));
+	return (0);
 	// char	*line;
 
 	// while (1)

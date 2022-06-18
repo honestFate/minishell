@@ -109,21 +109,21 @@ int	cmd_redirect_close(t_redirect **redirect_arr)
 
 int	exec_cmd(t_minishell *minishell, t_pipe_line *pipe_line, int fd_in, int fd_out)
 {
+	int		err;
 	int		built_in;
 	char	*path_to_cmd;
 
 	path_to_cmd = NULL;
+	printf("cmd - %s, errno - %d\n", pipe_line->cmd, errno);
 	if (fd_in >= 0)
 	{
-		if (dup2(fd_in, STDIN_FILENO) < 0)
+		if (dup2(fd_in, STDIN_FILENO) < 0 || close(fd_in))
 			return (M_ERR);
-		close(fd_in);
 	}
 	if (fd_out >= 0)
 	{
-		if (dup2(fd_out, STDOUT_FILENO) < 0)
+		if (dup2(fd_out, STDOUT_FILENO) < 0 || close(fd_out))
 			return (M_ERR);
-		close(fd_out);
 	}
 	//ft_putendl_fd(pipe_line->cmd, 1);
 	if (cmd_redirect(pipe_line->redirect_in)
@@ -132,21 +132,22 @@ int	exec_cmd(t_minishell *minishell, t_pipe_line *pipe_line, int fd_in, int fd_o
 	built_in = is_builtin(pipe_line->cmd);
 	if (built_in >= 0)
 		return (minishell->built_in[built_in](minishell, pipe_line->argv));
-	path_to_cmd = find_cmd(pipe_line->cmd, minishell->env_list);
-	ft_putendl_fd("path_to_cmd - ", 1);
+	printf("cmd - %s, errno - %d\n", pipe_line->cmd, errno);
+	err = find_cmd(pipe_line->cmd, minishell->env_list, &path_to_cmd);
+	ft_putstr_fd("path_to_cmd - ", 1);
 	ft_putendl_fd(path_to_cmd, 1);
-	if (access(path_to_cmd, X_OK))
-		ft_putendl_fd("access ok", 1);
+	/*if (access(path_to_cmd, X_OK))
+		ft_putendl_fd("access ok", 1);*/
 	if (path_to_cmd == NULL)
 	{
 		printf("find errno - %s\n", strerror(errno));
-		fatal_err(minishell, pipe_line);
+		fatal_err(minishell, pipe_line, err);
 	}
 	envarr_change_val(minishell->env_arr, "_", path_to_cmd);
 	execve(path_to_cmd, pipe_line->argv, minishell->env_arr);
 	if (errno)
 		printf("exec errno - %s\n", strerror(errno));
-	return (errno);
+	exit(errno);
 }
 
 int safe_close(int fd)
@@ -197,22 +198,24 @@ int stdbackup_close(t_std_backup *std_backup)
 
 int	exec_in_fork(t_minishell *minishell, t_pipe_line *pipe_line, t_pipe_desc *pipe_desc)
 {
+	printf("before fork cmd - %s, errno - %d\n", pipe_line->cmd, errno);
 	pipe_line->pid = fork();
+	printf("after fork cmd - %s, errno - %d\n", pipe_line->cmd, errno);
 	if (pipe_line->pid > 0)
 	{
 		sighandler_set(EXEC_MODE_PARENT);
-		ft_putendl_fd("MAIN", 1);
-		ft_putendl_fd(pipe_line->cmd, 1);
 		if (cmd_redirect_close(pipe_line->redirect_in)
 			|| cmd_redirect_close(pipe_line->redirect_out))
 			return (M_ERR);
 		return (M_OK);
 	}
-	if (pipe_line->pid == 0)
+	else if (pipe_line->pid == 0)
 	{
+		errno = 0;
 		sighandler_set(EXEC_MODE_CHILD);
 		safe_close(pipe_desc->fd_to_close);
 		exec_cmd(minishell, pipe_line, pipe_desc->fd_in, pipe_desc->fd_out);
+		fatal_err(minishell, pipe_line, errno);
 	}
 	return (M_ERR);
 }
@@ -239,30 +242,28 @@ int	pipe_exec(t_minishell *minishell, t_pipe_line *pipe_line, t_pipe_desc *pipe_
 	if (pipe_desc->exec_type == PIPE)
 	{
 		if (pipe(p))
-			fatal_err(minishell, pipe_line);
-		if (pipe_exec(minishell, pipe_line,
-			pipe_desc_init(SIMPLE, pipe_desc->fd_in, p[WRITE_END], p[READ_END])))
-			fatal_err(minishell, pipe_line);
+			fatal_err(minishell, pipe_line, errno);
+		pipe_exec(minishell, pipe_line,
+			pipe_desc_init(SIMPLE, pipe_desc->fd_in, p[WRITE_END], p[READ_END]));
 		if (safe_close(p[WRITE_END])
 			|| safe_close(pipe_desc->fd_in))
-			fatal_err(minishell, pipe_line);
+			fatal_err(minishell, pipe_line, errno);
 		if (pipe_line->next->next)
 		{
-			if (pipe_exec(minishell, pipe_line->next,
-				pipe_desc_init(PIPE, p[READ_END], pipe_desc->fd_out, -1)))
-				fatal_err(minishell, pipe_line);
+			pipe_exec(minishell, pipe_line->next,
+				pipe_desc_init(PIPE, p[READ_END], pipe_desc->fd_out, -1));
 		}
 		else
 		{
-			if (pipe_exec(minishell, pipe_line->next,
-				pipe_desc_init(SIMPLE, p[READ_END], pipe_desc->fd_out, -1)))
-				fatal_err(minishell, pipe_line);
-			safe_close(p[READ_END]);
+			pipe_exec(minishell, pipe_line->next,
+				pipe_desc_init(SIMPLE, p[READ_END], pipe_desc->fd_out, -1));
+			if (safe_close(p[READ_END]))
+				fatal_err(minishell, pipe_line, errno);
 		}
 		free(pipe_desc);
 	}
 	else if (exec_in_fork(minishell, pipe_line, pipe_desc))
-		fatal_err(minishell, pipe_line);
+		fatal_err(minishell, pipe_line, errno);
 	return (M_OK);
 }
 
@@ -292,12 +293,11 @@ int exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 
 	exit_status = 0;
 	if (stdbackup_copy(&std_backup))
-		fatal_err(minishell, pipe_line);
+		fatal_err(minishell, pipe_line, errno);
 	if (pipeline_set_fd(minishell, pipe_line))
 	{
 		if (isatty(STDIN_FILENO) || stdbackup_set(&std_backup))
-			fatal_err(minishell, pipe_line);
-		return (1);
+			fatal_err(minishell, pipe_line, errno);
 	}
 	if (!pipe_line->next && is_builtin(pipe_line->cmd) >= 0)
 		exit_status = exec_cmd(minishell, pipe_line, -1, -1);
@@ -321,7 +321,7 @@ int exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 		}
 	}
 	if (stdbackup_set(&std_backup) || stdbackup_close(&std_backup))
-		fatal_err(minishell, pipe_line);
+		fatal_err(minishell, pipe_line, errno);
 	printf("%d\n", exit_status);
 	sighandler_set(DEFAULT_MODE);
 	if (WIFEXITED(exit_status) && !WEXITSTATUS(exit_status))

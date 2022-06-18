@@ -39,7 +39,7 @@ void	free_str_arr(char **strings)
 	free(strings);
 }
 
-static int	check_overflow_util(char *s, int i, int flag)
+static int	check_overflow_util(char *s, long long int i, int flag)
 {
 	if (!*(s + 1))
 		return (M_OK);

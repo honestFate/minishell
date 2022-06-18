@@ -71,12 +71,15 @@ void	free_pipe_line(t_pipe_line *pipe_line)
 	}
 }
 
-void	fatal_err(t_minishell *minishell, t_pipe_line *pipe_line)
+void	fatal_err(t_minishell *minishell, t_pipe_line *pipe_line, int err)
 {
 	print_error(pipe_line->cmd, errno, NULL);
 	free_pipe_line(pipe_line);
 	free_str_arr(minishell->env_arr);
 	env_list_clear(minishell);
 	free(minishell);
-	exit(1);
+	if (err == EACCES)
+		exit(126);
+	if (err == ENOENT)
+		exit(127);
 }

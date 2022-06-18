@@ -33,8 +33,6 @@ void select_sort(t_env_list *ptr)
 {
 	t_env_list	*j;
 	t_env_list	*pos;
-	char	*temp_key;
-	char	*temp_val;
 
 	if (!ptr)
 		return ;
