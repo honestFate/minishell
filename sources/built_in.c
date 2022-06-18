@@ -113,7 +113,7 @@ int	ft_unset(t_minishell *minishell, char **argv)
 		if (envvar_validate(argv[i]))
 		{
 			err = M_ERR;
-			print_error(argv[0], EINVAL, argv[i]);
+			print_error(argv[0], INVALID_IDENTIFER, argv[i]);
 		}
 		else
 			envlist_delone(minishell, argv[i]);
@@ -174,17 +174,13 @@ int	ft_export(t_minishell *minishell, char **argv)
 			if (envvar_validate(argv[i]))
 			{
 				err = M_ERR;
-				print_error(argv[0], EINVAL, argv[i]);
+				print_error(argv[0], INVALID_IDENTIFER, argv[i]);
 			}
 			if (envlist_add_var(minishell, argv))
 				return (M_ERR);
 			++i;
 		}
 		return (err);
-	}
-	for (t_env_list *i = minishell->env_list; i != NULL; i = i->next)
-	{
-		printf("%s - %s\n", i->key, i->val);
 	}
 	select_sort(minishell->env_list);
 	ptr = minishell->env_list;

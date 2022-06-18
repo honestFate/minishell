@@ -4,9 +4,7 @@ char	*ft_strerr(int error)
 {
 	if (error <= 255)
 		return (strerror(error));
-	if (error == TOO_MANY_ARGS)
-		return ("слишком много аргументов");
-	if (error == INVALID_ARG)
+	if (error == INVALID_IDENTIFER)
 		return ("not a valid identifier");
 	return ("unknow error");
 }

@@ -14,6 +14,25 @@ void	builtin_arr_init(t_minishell *minishell)
 	minishell->built_in[BIN_EXIT] = ft_exit;
 }
 
+int	is_builtin(char *cmd)
+{
+	if (!strcmp(cmd, "echo"))
+		return (BIN_ECHO);
+	if (!strcmp(cmd, "cd"))
+		return (BIN_CD);
+	if (!strcmp(cmd, "pwd"))
+		return (BIN_PWD);
+	if (!strcmp(cmd, "export"))
+		return (BIN_EXPORT);
+	if (!strcmp(cmd, "unset"))
+		return (BIN_UNSET);
+	if (!strcmp(cmd, "env"))
+		return (BIN_ENV);
+	if (!strcmp(cmd, "exit"))
+		return (BIN_EXIT);
+	return (-1);
+}
+
 /*
 return zero if char is space sym, otherwise return >zero 
 */
@@ -82,4 +101,30 @@ int	check_overflow(char *s)
 		++s;
 	}
 	return (M_OK);
+}
+
+void	safe_free(void *data)
+{
+	if (data)
+		free(data);
+}
+
+int safe_close(int fd)
+{
+	if (fd >= 0)
+		return (close(fd));
+	return (M_OK);
+}
+
+int	list_len(t_pipe_line *data)
+{
+	int	i;
+
+	i = 0;
+	while (data)
+	{
+		data = data->next;
+		++i;
+	}
+	return (i);
 }

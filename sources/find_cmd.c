@@ -40,25 +40,13 @@ int	find_cmd(char *cmd, t_env_list *env_list, char **path_to_cmd)
 	int		err;
 	char	**envp_path;
 
-	i = 0;
-	while (cmd[i])
-	{
-		write(1, &cmd[i], 1);
-		write(1, "*", 1);
-		write(1, "\n", 1);
-		++i;
-	}
-	i = 0;
 	*path_to_cmd = NULL;
-	printf("cmd - %s, errno - %d\n", cmd, errno);
 	access((const char *)cmd, X_OK);
 	err = errno;
-	printf("cmd - %s, errno - %d\n", cmd, errno);
 	errno = 0;
 	if (!err)
 	{
 		*path_to_cmd = ft_strdup(cmd);
-		printf("cmd - %s, errno - %d\n", *path_to_cmd, err);
 		return (M_OK);
 	}
 	else if (env_list && cmd[0] != '/' && ft_strncmp(cmd, "./", 2) != 0)

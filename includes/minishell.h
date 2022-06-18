@@ -22,9 +22,8 @@
 # define TERM_TYPE_BUFF 2048
 # define READ_END 0
 # define WRITE_END 1
-# define TOO_MANY_ARGS 256
-# define USAGE_ERROR 257
-# define INVALID_ARG 258
+# define USAGE_ERROR 256
+# define INVALID_IDENTIFER 257
 # define BIN_ECHO 0
 # define BIN_CD 1
 # define BIN_PWD 2
@@ -148,9 +147,13 @@ int	put_history_line(char *line, int fd);
 
 //utils
 void	builtin_arr_init(t_minishell *minishell);
+int	is_builtin(char *cmd);
 int	ft_isspace(char c);
 int	check_overflow(char *s);
 void	free_str_arr(char **strings);
+int safe_close(int fd);
+void	safe_free(void *data);
+int	list_len(t_pipe_line *data);
 
 //err_handler
 void	free_pipe_line(t_pipe_line *pipe_line);
@@ -162,6 +165,20 @@ void	fatal_err(t_minishell *minishell, t_pipe_line *pipe_line, int err);
 int	sighandler_set(int mode);
 
 //heredoc
-char	*heredoc(t_minishell *minishell, int expand, char *delimeter, int index);
+char	*heredoc(t_minishell *minishell, t_redirect *r_info, int index);
+
+//redirect
+int	make_redirect(t_minishell *minishell, t_redirect **redirect, int index);
+int	cmd_redirect(t_redirect **redirect_arr);
+int	cmd_redirect_close(t_redirect **redirect_arr);
+int	pipeline_set_fd(t_minishell *minishell, t_pipe_line *pipe_line);
+
+//std_backup
+int	stdbackup_copy(t_std_backup *std_backup);
+int stdbackup_set(t_std_backup *std_backup);
+int stdbackup_close(t_std_backup *std_backup);
+
+//defenv_init
+int	default_env(t_minishell *minishell);
 
 #endif
