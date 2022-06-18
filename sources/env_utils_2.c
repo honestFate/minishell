@@ -45,3 +45,37 @@ char	*ft_getenv(t_env_list *env_list, char *name)
 		return (NULL);
 	return (env_list->val);
 }
+
+int	envvar_validate(char *var)
+{
+	int	i;
+
+	i = 0;
+	if (!ft_isalpha(var[i]) && var[i] != '_')
+		return (M_ERR);
+	++i;
+	while (var[i])
+	{
+		if (!ft_isalnum(var[i]) && var[i] != '_')
+			return (M_ERR);
+		++i;
+	}
+	return (M_OK);
+}
+
+int	envvar_validate_new(char *var)
+{
+	int	i;
+
+	i = 0;
+	if (!ft_isalpha(var[i]) && var[i] != '_')
+		return (M_ERR);
+	++i;
+	while (var[i] && var[i] != '=')
+	{
+		if (!ft_isalnum(var[i]) && var[i] != '_')
+			return (M_ERR);
+		++i;
+	}
+	return (M_OK);
+}

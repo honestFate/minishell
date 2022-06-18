@@ -136,9 +136,10 @@ void select_sort(t_env_list *ptr);
 void	set_increment(int *arr);
 int		envlist_change_val(t_env_list *env_list, char *key, char *new_val);
 int	envarr_change_val(char **env, char *key, char *val);
+int	envvar_validate(char *var);
 
 //exec
-char	*find_cmd(char *cmd, t_env_list *env_list);
+int	find_cmd(char *cmd, t_env_list *env_list, char **path_to_cmd);
 
 //history
 int	open_history_file(char *home_path);
