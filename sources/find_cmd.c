@@ -1,6 +1,5 @@
 #include "minishell.h"
 
-
 static int	find_cmd_in_path(char **envp_path, char *cmd, char	**path_to_cmd)
 {
 	int		i;

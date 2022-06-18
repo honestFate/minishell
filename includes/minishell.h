@@ -24,6 +24,7 @@
 # define WRITE_END 1
 # define USAGE_ERROR 256
 # define INVALID_IDENTIFER 257
+# define NOT_NUM_ARG 258
 # define BIN_ECHO 0
 # define BIN_CD 1
 # define BIN_PWD 2
@@ -172,6 +173,7 @@ int	make_redirect(t_minishell *minishell, t_redirect **redirect, int index);
 int	cmd_redirect(t_redirect **redirect_arr);
 int	cmd_redirect_close(t_redirect **redirect_arr);
 int	pipeline_set_fd(t_minishell *minishell, t_pipe_line *pipe_line);
+int	redirect_pipe(int fd_in, int fd_out);
 
 //std_backup
 int	stdbackup_copy(t_std_backup *std_backup);

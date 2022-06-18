@@ -83,3 +83,18 @@ int	pipeline_set_fd(t_minishell *minishell, t_pipe_line *pipe_line)
 	}
 	return (M_OK);
 }
+
+int	redirect_pipe(int fd_in, int fd_out)
+{
+	if (fd_in >= 0)
+	{
+		if (dup2(fd_in, STDIN_FILENO) < 0 || close(fd_in))
+			return (M_ERR);
+	}
+	if (fd_out >= 0)
+	{
+		if (dup2(fd_out, STDOUT_FILENO) < 0 || close(fd_out))
+			return (M_ERR);
+	}
+	return (M_OK);
+}

@@ -6,6 +6,8 @@ char	*ft_strerr(int error)
 		return (strerror(error));
 	if (error == INVALID_IDENTIFER)
 		return ("not a valid identifier");
+	if (error == NOT_NUM_ARG)
+		return ("numeric argument required");
 	return ("unknow error");
 }
 
