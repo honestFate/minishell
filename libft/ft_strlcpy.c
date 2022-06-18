@@ -6,28 +6,11 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/12 00:37:52 by ndillon           #+#    #+#             */
-/*   Updated: 2022/05/02 17:06:12 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 02:08:00 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-
-/*void	ft_strcpy(char *dst, const char *src, size_t dstsize)
-{
-	unsigned long	i;
-	char			*ptr;
-
-	if (!dstsize)
-		return ;
-	ptr = dst;
-	i = 0;
-	while (i < dstsize)
-	{
-		ptr[i] = src[i];
-		i++;
-	}
-}*/
-
 
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
 {

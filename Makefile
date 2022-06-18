@@ -8,8 +8,12 @@ LIB_DIR = ./libft/
 LIB = libft.a
 RL_LIB = /Users/ndillon/.brew/Cellar/readline/8.1.2/lib/*.a
 
-SRCS =	built_in.c env_sort.c env_utils.c env_utils_2.c env.c exec_cmd.c utils.c history.c\
-		get_next_line.c get_next_line_utils.c find_cmd.c err_handler.c signal.c heredoc.c
+SRCS =	cd.c			env.c					env_sort.c		env_utils_3.c	exec_command_line.c	\
+		find_cmd.c		get_next_line_utils.c	history.c		redirect.c		unset.c				\
+		defenv_init.c	env_copy.c				env_utils.c		err_handler.c	exit.c				\
+		free_struct.c	heredoc.c				pipe.c			signal.c		utils.c				\
+		echo.c			env_list.c				env_utils_2.c	exec_cmd.c		export.c			\
+		get_next_line.c	heredoc_utils.c			pwd.c			std_backup.c	utils_2.c			\
 
 OBJS = $(SRCS:%.c=$(OBJ)%.o)
 

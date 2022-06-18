@@ -6,13 +6,13 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:59 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:13:00 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 02:09:27 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	get_correct_status(int exit_status)
+void	get_correct_status(int exit_status)
 {
 	if (exit_status >= 0)
 	{
@@ -53,11 +53,11 @@ int	start_exec_pipe(t_minishell *minishell, t_pipe_line *pipe_line)
 	return (exit_status);
 }
 
-int exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
+int	exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 {
-	t_std_backup std_backup;
-	int			exit_status;
-	t_pipe_line	*pipe_line;
+	t_std_backup	std_backup;
+	t_pipe_line		*pipe_line;
+	int				exit_status;
 
 	exit_status = -1;
 	if (stdbackup_copy(&std_backup))
@@ -80,7 +80,7 @@ int exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 }
 
 //TEST
-int main(int argc, char *argv[], char *envp[])
+int	main(int argc, char *argv[], char *envp[])
 {
 	(void)argc;
 	(void)argv;
