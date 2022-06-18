@@ -21,7 +21,6 @@ int	env_set_val(t_env_list *elem, char *val)
 	if (elem->val)
 		free(elem->val);
 	elem->val = val;
-	ft_putendl_fd(elem->val, 1);
 	return (M_OK);
 }
 

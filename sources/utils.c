@@ -1,5 +1,8 @@
 #include "minishell.h"
 
+/*
+init builtin array for t_minishell struct 
+*/
 void	builtin_arr_init(t_minishell *minishell)
 {
 	minishell->built_in[BIN_ECHO] = ft_echo;
@@ -11,6 +14,9 @@ void	builtin_arr_init(t_minishell *minishell)
 	minishell->built_in[BIN_EXIT] = ft_exit;
 }
 
+/*
+return zero if char is space sym, otherwise return >zero 
+*/
 int	ft_isspace(char c)
 {
 	if (c == '\t' || c == '\n'
@@ -20,6 +26,9 @@ int	ft_isspace(char c)
 	return (0);
 }
 
+/*
+free NULL-terminated str array
+*/
 void	free_str_arr(char **strings)
 {
 	int	i;
@@ -30,6 +39,24 @@ void	free_str_arr(char **strings)
 	free(strings);
 }
 
+static int	check_overflow_util(char *s, int i, int flag)
+{
+	if (!*(s + 1))
+		return (M_OK);
+	if (*(s + 2))
+		return (M_ERR);
+	if (i > LLONG_MAX / 10)
+		return (M_ERR);
+	if (i == LLONG_MAX / 10 && *(s + 1) - 48 > 8 && flag)
+		return (M_ERR);
+	if (i == LLONG_MAX / 10 && *(s + 1) - 48 > 7 && !flag)
+		return (M_ERR);
+	return (M_OK);
+}
+
+/*
+check is number in passed string out of LLong int range
+*/
 int	check_overflow(char *s)
 {
 	long long int	i;
@@ -49,19 +76,7 @@ int	check_overflow(char *s)
 	{
 		i = i + (*s - 48);
 		if (num_len == 17)
-		{
-			if (!*(s + 1))
-				return (M_OK);
-			if (*(s + 2))
-				return (M_ERR);
-			if (i > LLONG_MAX / 10)
-				return (M_ERR);
-			if (i == LLONG_MAX / 10 && *(s + 1) - 48 > 8 && flag)
-				return (M_ERR);
-			if (i == LLONG_MAX / 10 && *(s + 1) - 48 > 7 && !flag)
-				return (M_ERR);
-			return (M_OK);
-		}
+			return (check_overflow_util(s, i, flag));
 		i *= 10;
 		++num_len;
 		++s;

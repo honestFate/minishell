@@ -1,22 +1,16 @@
 #include "minishell.h"
 
-void select_sort(t_env_list *ptr)
+static void	select_sort_util(t_env_list *ptr, t_env_list *j, t_env_list *pos)
 {
-	t_env_list	*i;
-	t_env_list	*j;
-	t_env_list	*pos;
 	char	*temp_key;
 	char	*temp_val;
 
-	if (!ptr)
-		return ;
-	i = ptr;
-	while (i->next)
+	while (ptr->next)
 	{
-		pos = i;
-		temp_key = i->key;
-		temp_val = i->val;
-		j = i->next;
+		pos = ptr;
+		temp_key = ptr->key;
+		temp_val = ptr->val;
+		j = ptr->next;
 		while(j)
 		{
 			if (ft_strcmp(j->key, temp_key) < 0)
@@ -27,10 +21,24 @@ void select_sort(t_env_list *ptr)
 			}
 			j = j->next;
 		}
-		pos->key = i->key;
-		pos->val = i->val;
-		i->key = temp_key;
-		i->val = temp_val;
-		i = i->next;
+		pos->key = ptr->key;
+		pos->val = ptr->val;
+		ptr->key = temp_key;
+		ptr->val = temp_val;
+		ptr = ptr->next;
 	}
+}
+
+void select_sort(t_env_list *ptr)
+{
+	t_env_list	*j;
+	t_env_list	*pos;
+	char	*temp_key;
+	char	*temp_val;
+
+	if (!ptr)
+		return ;
+	j = NULL;
+	pos = NULL;
+	select_sort_util(ptr, j, pos);
 }

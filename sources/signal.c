@@ -1,37 +1,24 @@
 #include "minishell.h"
 
-void	sig_default_mode(int signal)
+void	interactive_sigint(int signal)
 {
 	if (signal == SIGINT)
 	{
-		write(1, "\n", 1);
+		g_exit_status = 1;
+		ft_putchar_fd('\n', STDOUT_FILENO);
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
 	}
 }
 
-void	sig_heredoc_mode(int signal)
+void	heredoc_sigint(int signal)
 {
 	if (signal == SIGINT)
-	{
-		//write(1, "\n", 1);
-		//rl_on_new_line();
-		//rl_replace_line("", 0);
-		//rl_redisplay();
 		close(STDIN_FILENO);
-	}
 }
 
-/*void	sig_exit(int signal)
-{
-	if (signal == SIGINT)
-	{
-		exit(100);
-	}
-}*/
-
-int	sig_quit(int mode)
+int	sethandler_sigquit(int mode)
 {
 	struct sigaction	sig_default;
 
@@ -45,24 +32,27 @@ int	sig_quit(int mode)
 	return (sigaction(SIGQUIT, &sig_default, NULL));
 }
 
-int	sighandler_set(int mode)
+int	sethandler_sigint(int mode)
 {
 	struct sigaction	sig_default;
 
-	if (sig_quit(mode))
-		return (M_ERR);
 	ft_memset(&sig_default, 0, sizeof(sig_default));
 	if (mode == DEFAULT_MODE)
-		sig_default.sa_handler = sig_default_mode;
+		sig_default.sa_handler = interactive_sigint;
 	else if (mode == HEREDOC_MODE)
-		sig_default.sa_handler = sig_heredoc_mode;
+		sig_default.sa_handler = heredoc_sigint;
 	else if (mode == EXEC_MODE_PARENT)
 		sig_default.sa_handler = SIG_IGN;
 	else if (mode == EXEC_MODE_CHILD)
 		sig_default.sa_handler = SIG_DFL;
 	else
 		return (M_ERR);
-	//sigaddset(&set, SIGQUIT);
-	//sigaddset(&set, SA_SIGINFO);
 	return (sigaction(SIGINT, &sig_default, NULL));
+}
+
+int	sighandler_set(int mode)
+{
+	if (sethandler_sigint(mode) || sethandler_sigint(mode))
+		return (M_ERR);
+	return (M_OK);
 }

@@ -20,7 +20,7 @@ int	ft_cd(t_minishell *minishell, char **argv)
 
 	(void)minishell;
 	if (!argv[1])
-		return (0);
+		return (M_OK);
 	if (argv[2])
 		return (TOO_MANY_ARGS);
 	if (!getcwd(current_path, PATH_MAX + 1))
@@ -33,15 +33,14 @@ int	ft_cd(t_minishell *minishell, char **argv)
 		target_path = ft_strjoin(current_path, argv[1]);
 		if (!target_path)
 			return (M_ERR);
-		printf("%s\n", target_path); //debug
 	}
 	chdir(target_path);
-	write(1, "pwd change\n", 12);
 	if (!errno)
 		envlist_change_val(minishell->env_list, "PWD", target_path);
+	else
+		return (M_ERR);
 	if (target_path)
 		free(target_path);
-	write(1, "pwd change end\n", 16);
 	return (M_OK);
 }
 
@@ -63,7 +62,7 @@ int	ft_env(t_minishell *minishell, char **argv)
 		}
 		ptr = ptr->next;
 	}
-	return (0);
+	return (M_OK);
 }
 
 int	ft_echo(t_minishell *minishell, char **argv)
@@ -95,14 +94,39 @@ int	ft_echo(t_minishell *minishell, char **argv)
 	return (M_OK);
 }
 
-int	ft_unset(t_minishell *minishell, char **argv)
+int	envvar_validate(char *var)
 {
 	int	i;
 
+	i = 0;
+	if (!ft_isalpha(var[i]) && var[i] != '_')
+		return (M_ERR);
+	++i;
+	while (var[i])
+	{
+		if (!ft_isalnum(var[i]) && var[i] != '_')
+			return (M_ERR);
+		++i;
+	}
+	return (M_OK);
+}
+
+int	ft_unset(t_minishell *minishell, char **argv)
+{
+	int	i;
+	int	err;
+
 	i = 1;
+	err = M_OK;
 	while (argv[i])
 	{
-		envlist_delone(minishell, argv[i]);
+		if (envvar_validate(argv[i]))
+		{
+			err = M_ERR;
+			print_error(argv[0], EINVAL, argv[i]);
+		}
+		else
+			envlist_delone(minishell, argv[i]);
 		++i;
 	}
 	return (M_OK);
@@ -149,7 +173,6 @@ int	ft_export(t_minishell *minishell, char **argv)
 
 	if (argv[1])
 	{
-		ft_putendl_fd("export put argv to list", STDOUT_FILENO);
 		if (envlist_add_var(minishell, argv))
 			return (M_ERR);
 		return (M_OK);
@@ -158,9 +181,7 @@ int	ft_export(t_minishell *minishell, char **argv)
 	{
 		printf("%s - %s\n", i->key, i->val);
 	}
-	ft_putendl_fd("shell sort", STDOUT_FILENO);
 	select_sort(minishell->env_list);
-	ft_putendl_fd("shell sort end", STDOUT_FILENO);
 	ptr = minishell->env_list;
 	while (ptr)
 	{
@@ -168,6 +189,5 @@ int	ft_export(t_minishell *minishell, char **argv)
 			printf("declare -x %s=\"%s\"\n", ptr->key, ptr->val);
 		ptr = ptr->next;
 	}
-	ft_putendl_fd("ok", STDOUT_FILENO);
 	return (M_OK);
 }

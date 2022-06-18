@@ -6,14 +6,23 @@ char	*ft_strerr(int error)
 		return (strerror(error));
 	if (error == TOO_MANY_ARGS)
 		return ("слишком много аргументов");
+	if (error == INVALID_ARG)
+		return ("not a valid identifier");
 	return ("unknow error");
 }
 
-void	print_error(char *cmd, int error)
+void	print_error(char *cmd, int error, char *arg)
 {
-	ft_putendl_fd("minishell: ", STDERR_FILENO);
-	ft_putendl_fd(cmd, STDERR_FILENO);
-	ft_putendl_fd(": ", STDERR_FILENO);
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(cmd, STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
+	if (arg)
+	{
+		ft_putstr_fd("`", STDERR_FILENO);
+		ft_putstr_fd(arg, STDERR_FILENO);
+		ft_putstr_fd("'", STDERR_FILENO);
+		ft_putstr_fd(": ", STDERR_FILENO);
+	}
 	ft_putendl_fd(ft_strerr(error), STDERR_FILENO);
 }
 
@@ -64,7 +73,7 @@ void	free_pipe_line(t_pipe_line *pipe_line)
 
 void	fatal_err(t_minishell *minishell, t_pipe_line *pipe_line)
 {
-	print_error(pipe_line->cmd, errno);
+	print_error(pipe_line->cmd, errno, NULL);
 	free_pipe_line(pipe_line);
 	free_str_arr(minishell->env_arr);
 	env_list_clear(minishell);

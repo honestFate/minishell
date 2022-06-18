@@ -1,86 +1,63 @@
 #include "minishell.h"
 
-char	*find_cmd(char *cmd, t_env_list *env_list)
+
+static int	find_cmd_in_path(char **envp_path, char *cmd, char	**path_to_cmd)
+{
+	int		i;
+	int		err;
+	char	*temp;
+
+	i = 0;
+	err = 0;
+	while (envp_path[i])
+	{
+		temp = ft_strjoin(envp_path[i], "/");
+		path_to_cmd = ft_strjoin(temp, cmd);
+		free(temp);
+		access(path_to_cmd, X_OK);
+		if (!errno)
+		{
+			err = 0;
+			break ;
+		}
+		free(path_to_cmd);
+		if (err == 0 || errno == EACCES)
+			err = errno;
+		errno = 0;
+		++i;
+	}
+	return (err);
+}
+
+/*
+set path to executable file in path_to_cmd
+return zero if cmd exist, otherwise return error code
+and set path_to_cmd to NULL
+*/
+int	find_cmd(char *cmd, t_env_list *env_list, char **path_to_cmd)
 {
 	int		i;
 	char	*path;
 	int		err;
 	char	*temp;
 	char	**envp_path;
-	char	*path_to_cmd;
-	char	pwd[PATH_MAX + 1];
 
-	path_to_cmd = NULL;
+	*path_to_cmd = NULL;
 	access(cmd, X_OK);
 	err = errno;
 	errno = 0;
 	if (!err)
-		return (ft_strdup(cmd));
-	if (ft_strncmp(cmd, "./", 2) == 0)
-	{
-		write(1, "./ govno\n", 10);
-		if (getcwd(pwd, PATH_MAX + 1) == NULL)
-			return (NULL);
-		ft_putendl_fd(cmd, 1);
-		if (ft_strncmp(cmd, "./", 2) == 0)
-		{
-			printf("ERRNO - %d, EBLAN?\n", errno);
-			write(1, "./ govno\n", 10);
-			char *tmp = ft_strdup(cmd + 1);
-			char *relative_path = ft_strjoin(pwd, tmp);
-			free(tmp);
-			ft_putendl_fd(relative_path, 1);
-			printf("strlen - %d\n", ft_strlen(relative_path));
-			printf("ERRNO - %d, EBLAN?\n", errno);
-			access(relative_path, X_OK);
-			if (!errno)
-			{
-				err = 0;
-				return (relative_path);
-			}
-			printf("ERRNO - %d, EBLAN?\n", errno);
-			free(relative_path);
-			if (errno == EACCES)
-				err = errno;
-		}
-		else
-		{
-			
-			path_to_cmd = ft_strdup(cmd);
-			return (path_to_cmd);
-		}
-	}
+		return (M_OK);
 	else if (env_list)
 	{
-		path = ft_getenv(env_list, "PATH");
-		if (!path)
-			return (NULL);
-		envp_path = ft_split(path, ':');
-		free(path);
+		envp_path = ft_split(ft_getenv(env_list, "PATH"), ':');
 		if (!envp_path)
-			return (NULL);
-		i = 0;
-		while (envp_path[i])
-		{
-			temp = ft_strjoin(envp_path[i], "/");
-			path_to_cmd = ft_strjoin(temp, cmd);
-			free(temp);
-			access(path_to_cmd, X_OK);
-			if (!errno)
-			{
-				err = 0;
-				break ;
-			}
-			free(path_to_cmd);
-			if (errno == EACCES)
-				err = errno;
-			errno = 0;
-			++i;
-		}
+			return (errno);
+		err = find_cmd_in_path(envp_path, cmd, path_to_cmd);
 		i = 0;
 		while (envp_path[i])
 			free(envp_path[i++]);
 		free(envp_path);
 	}
-	return (path_to_cmd);
+	return (err);
 }

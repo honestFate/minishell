@@ -324,18 +324,26 @@ int exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 		fatal_err(minishell, pipe_line);
 	printf("%d\n", exit_status);
 	sighandler_set(DEFAULT_MODE);
-	if (WIFEXITED(exit_status))
+	if (WIFEXITED(exit_status) && !WEXITSTATUS(exit_status))
+	{
+		printf("Успешное завершение\n");
+		g_exit_status = 0;
+	}
+	else
 	{
 		printf("Не ноль\n");
 		if (WIFSIGNALED(exit_status))
 		{
-			printf("Сигнал - %d\n", WEXITSTATUS(exit_status));
-			return (WEXITSTATUS(exit_status) + 128);
+			printf("Сигнал - %d\n", WTERMSIG(exit_status));
+			g_exit_status = WTERMSIG(exit_status) + 128;
 		}
-		printf("Не сигнал - %d\n", WEXITSTATUS(exit_status));
-		return (WEXITSTATUS(exit_status));
+		else
+		{
+			printf("Не сигнал - %d\n", WEXITSTATUS(exit_status));
+			g_exit_status = WEXITSTATUS(exit_status);
+		}
 	}
-	return (exit_status);
+	return (g_exit_status);
 }
 
 void	safe_free(void *data)
@@ -360,7 +368,6 @@ int set_pwd(t_minishell *minishell)
 	{
 		pwd = ft_strjoin("PWD=", path);
 		free(path);
-		ft_putendl_fd(pwd, 1);
 		if (!pwd)
 			return(M_ERR);
 		pwd_var = new_env_elem(pwd);

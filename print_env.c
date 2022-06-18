@@ -38,39 +38,28 @@ typedef struct	s_cmd_list
 // 	signal(SIGQUIT, signal_handler);
 // }
 
-void	sig_default_mode(int signal)
+char *new_str(char **s)
 {
-	printf("Process - %d, sig - %d", getpid(), signal);
-}
-
-int	sighandler_set()
-{
-	struct sigaction	sig_default;
-	struct sigaction	sig_quit;
-
-	memset(&sig_default, 0, sizeof(sig_default));
-	sig_default.sa_handler = sig_default_mode;
-	sigaction(SIGINT, &sig_default, NULL);
-	memset(&sig_quit, 0, sizeof(sig_quit));
-	sig_quit.sa_handler = sig_default_mode;
-	sigaction(SIGINT, &sig_quit, NULL);
+	*s = malloc(30);
+	(*s)[0] = 'o';
+	(*s)[1] = 'k';
+	(*s)[2] = '\0';
+	printf("%s\n", *s);
+	return(*s);
 }
 
 int main(int argc, char *argv[], char *envp[])
 {
 	(void)argc;
 
-	sighandler_set();
-	pid_t pid = fork();
-	printf("Process - %d\n", pid);
-	if (pid > 0)
-	{
-		waitpid(pid, NULL, WUNTRACED);
-	}
-	else
-	{
-		while (1);
-	}
+	char	*line;
+	line = NULL;
+	char *s = new_str(&line);
+	write(1, line + 0, 1);
+	write(1, line + 1, 1);
+	write(1, line + 2, 1);
+	printf("%s\n", line);
+	printf("%s\n", s);
 	// char	*line;
 
 	// while (1)

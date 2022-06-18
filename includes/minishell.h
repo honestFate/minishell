@@ -24,6 +24,7 @@
 # define WRITE_END 1
 # define TOO_MANY_ARGS 256
 # define USAGE_ERROR 257
+# define INVALID_ARG 258
 # define BIN_ECHO 0
 # define BIN_CD 1
 # define BIN_PWD 2
@@ -152,7 +153,7 @@ void	free_str_arr(char **strings);
 
 //err_handler
 void	free_pipe_line(t_pipe_line *pipe_line);
-void	print_error(char *cmd, int error);
+void	print_error(char *cmd, int error, char *arg);
 char	*ft_getenv(t_env_list *env_list, char *name);
 void	fatal_err(t_minishell *minishell, t_pipe_line *pipe_line);
 
