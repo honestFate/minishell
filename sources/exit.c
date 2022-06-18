@@ -5,13 +5,10 @@ int	ft_exit(t_minishell *minishell, t_pipe_line *pipe_line) //need to make bette
 	int				i;
 	unsigned char	exit_status;
 
-	(void)minishell;
 	i = 0;
 	if (!pipe_line->argv[1])
-		exit(EXIT_SUCCESS);
+		exit_minishell(minishell, pipe_line, EXIT_SUCCESS, NULL);
 	while (ft_isspace(pipe_line->argv[1][i]))
-		++i;
-	if (pipe_line->argv[1][i])
 		++i;
 	if (check_overflow(pipe_line->argv[1]) == M_ERR)
 		exit_minishell(minishell, pipe_line, 255, pipe_line->argv[1]);
@@ -19,6 +16,7 @@ int	ft_exit(t_minishell *minishell, t_pipe_line *pipe_line) //need to make bette
 	{
 		if (!ft_isdigit(pipe_line->argv[1][i]))
 			exit_minishell(minishell, pipe_line, 255, pipe_line->argv[1]);
+		++i;
 	}
 	if (pipe_line->argv[2])
 	{

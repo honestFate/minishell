@@ -73,6 +73,8 @@ void	free_pipe_line(t_pipe_line *pipe_line)
 
 void	select_exit_status(int err)
 {
+	if (err == EXIT_SUCCESS)
+		exit(0);
 	if (err == EACCES)
 		exit(126);
 	if (err == ENOENT)
