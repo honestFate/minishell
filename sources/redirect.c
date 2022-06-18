@@ -1,13 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirect.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/19 01:13:22 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/19 01:25:33 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	make_redirect(t_minishell *minishell, t_redirect **redirect, int index)
 {
 	int	i;
 
-	i = 0;
+	i = -1;
 	if (!redirect)
 		return (M_OK);
-	while (redirect[i])
+	while (redirect[++i])
 	{
 		if (redirect[i]->type == REDIRECT_HEREDOC)
 		{
@@ -21,10 +33,10 @@ int	make_redirect(t_minishell *minishell, t_redirect **redirect, int index)
 		else if (redirect[i]->type == REDIRECT_OUT)
 			redirect[i]->fd = open(redirect[i]->arg2, O_WRONLY | O_CREAT, 0644);
 		else if (redirect[i]->type == REDIRECT_OUT_APPEND)
-			redirect[i]->fd = open(redirect[i]->arg2, O_WRONLY | O_APPEND | O_CREAT, 0644);
+			redirect[i]->fd = open(redirect[i]->arg2,
+					O_WRONLY | O_APPEND | O_CREAT, 0644);
 		if (redirect[i]->fd < 0)
 			return (M_ERR);
-		++i;
 	}
 	return (M_OK);
 }

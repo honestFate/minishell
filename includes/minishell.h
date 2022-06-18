@@ -107,7 +107,7 @@ typedef struct	s_minishell
 	char		*history_file;
 	int			exit_status;
 	int			history_fd;
-	int			(*built_in[BIN_NUM])(t_minishell *minishell, char **argv);
+	int			(*built_in[BIN_NUM])(t_minishell *minishell, t_pipe_line *pipe_line);
 }				t_minishell;
 
 //built-in

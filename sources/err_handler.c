@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   err_handler.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/19 01:12:54 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/19 01:45:02 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 char	*ft_strerr(int error)
@@ -83,7 +95,11 @@ void	select_exit_status(int err)
 		exit(127);
 }
 
-void	exit_minishell(t_minishell *minishell, t_pipe_line *pipe_line, int err, char *arg)
+void	exit_minishell(
+	t_minishell *minishell,
+	t_pipe_line *pipe_line,
+	int err,
+	char *arg)
 {
 	print_error(pipe_line->cmd, err, arg);
 	free_pipe_line(pipe_line);

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_list.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/19 01:12:39 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/19 01:15:50 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	env_copy(t_minishell *minishell, char **env)
@@ -61,7 +73,6 @@ int	env_fill_array(t_minishell *minishell)
 		ptr = ptr->next;
 	}
 	minishell->env_arr[i] = NULL;
-	ft_putendl_fd("fill array ok", STDOUT_FILENO);
 	return (0);
 }
 
@@ -77,9 +88,8 @@ int	env_to_array(t_minishell *minishell)
 		free(minishell->env_arr[i]);
 		free(minishell->env_arr);
 	}
-	ft_putendl_fd("free arr", STDOUT_FILENO);
 	minishell->env_arr = (char **)
-			malloc((minishell->env_list_size + 1) * sizeof(char *)); 
+		malloc((minishell->env_list_size + 1) * sizeof(char *));
 	if (!minishell->env_arr)
 		return (errno);
 	if (!minishell->env_list_size)

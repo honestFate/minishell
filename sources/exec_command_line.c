@@ -1,11 +1,63 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_command_line.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/19 01:12:59 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/19 01:13:00 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
+
+int	get_correct_status(int exit_status)
+{
+	if (exit_status >= 0)
+	{
+		if (WIFEXITED(exit_status) && !WEXITSTATUS(exit_status))
+			g_exit_status = 0;
+		else
+		{
+			if (WIFSIGNALED(exit_status))
+				g_exit_status = WTERMSIG(exit_status) + 128;
+			else
+				g_exit_status = WEXITSTATUS(exit_status);
+		}
+	}
+}
+
+int	start_exec_pipe(t_minishell *minishell, t_pipe_line *pipe_line)
+{
+	int	exit_status;
+
+	if (pipe_line->next)
+		pipe_exec(minishell, pipe_line, pipe_desc_init(PIPE, -1, -1, -1));
+	else
+		pipe_exec(minishell, pipe_line, pipe_desc_init(SIMPLE, -1, -1, -1));
+	while (pipe_line)
+	{
+		if (pipe_line->pid > 0)
+		{
+			if (pipe_line->next)
+			{
+				if (waitpid(pipe_line->pid, NULL, WUNTRACED) < 0)
+					return (M_ERR);
+			}
+			else if (waitpid(pipe_line->pid, &exit_status, WUNTRACED))
+				return (M_ERR);
+		}
+		pipe_line = pipe_line->next;
+	}
+	return (exit_status);
+}
 
 int exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 {
-	//int			pipe_len;
 	t_std_backup std_backup;
 	int			exit_status;
-	t_pipe_line	*ptr;
+	t_pipe_line	*pipe_line;
 
 	exit_status = -1;
 	if (stdbackup_copy(&std_backup))
@@ -17,51 +69,13 @@ int exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 	}
 	if (!pipe_line->next && is_builtin(pipe_line->cmd) >= 0)
 		g_exit_status = exec_cmd(minishell, pipe_line, -1, -1);
-	else
-	{
-		if (pipe_line->next)
-			pipe_exec(minishell, pipe_line, pipe_desc_init(PIPE, -1, -1, -1));
-		else
-			pipe_exec(minishell, pipe_line, pipe_desc_init(SIMPLE, -1, -1, -1));
-		ptr = pipe_line;
-		while (ptr)
-		{
-			if (ptr->pid > 0)
-			{
-				if (ptr->next)
-					waitpid(ptr->pid, NULL, WUNTRACED);
-				else
-					waitpid(ptr->pid, &exit_status, WUNTRACED);
-			}
-			ptr = ptr->next;
-		}
-	}
+	else if (start_exec_pipe(minishell, pipe_line))
+		fatal_err(minishell, pipe_line, errno);
 	if (stdbackup_set(&std_backup) || stdbackup_close(&std_backup))
 		fatal_err(minishell, pipe_line, errno);
-	printf("%d\n", exit_status);
-	sighandler_set(DEFAULT_MODE);
-	if (exit_status >= 0)
-	{
-		if (WIFEXITED(exit_status) && !WEXITSTATUS(exit_status))
-		{
-			printf("Успешное завершение\n");
-			g_exit_status = 0;
-		}
-		else
-		{
-			printf("Не ноль\n");
-			if (WIFSIGNALED(exit_status))
-			{
-				printf("Сигнал - %d\n", WTERMSIG(exit_status));
-				g_exit_status = WTERMSIG(exit_status) + 128;
-			}
-			else
-			{
-				printf("Не сигнал - %d\n", WEXITSTATUS(exit_status));
-				g_exit_status = WEXITSTATUS(exit_status);
-			}
-		}
-	}
+	if (sighandler_set(DEFAULT_MODE))
+		fatal_err(minishell, pipe_line, errno);
+	get_correct_status(exit_status);
 	return (g_exit_status);
 }
 

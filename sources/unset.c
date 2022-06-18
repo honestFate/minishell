@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   unset.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/19 01:13:32 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/19 01:21:43 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	ft_unset(t_minishell *minishell, t_pipe_line *pipe_line)
@@ -12,7 +24,10 @@ int	ft_unset(t_minishell *minishell, t_pipe_line *pipe_line)
 		if (envvar_validate(pipe_line->argv[i]))
 		{
 			err = M_ERR;
-			print_error(pipe_line->argv[0], INVALID_IDENTIFER, pipe_line->argv[i]);
+			print_error(
+				pipe_line->argv[0],
+				INVALID_IDENTIFER,
+				pipe_line->argv[i]);
 		}
 		else
 			envlist_delone(minishell, pipe_line->argv[i]);

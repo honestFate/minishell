@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/19 01:12:48 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/19 01:19:54 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	env_set_key(t_env_list *elem, char *key)
@@ -24,10 +36,33 @@ int	env_set_val(t_env_list *elem, char *val)
 	return (M_OK);
 }
 
+static t_env_list	*new_elem_alloc(char *env_key, char *env_val)
+{
+	t_env_list	*elem;
+
+	elem = (t_env_list *)malloc(sizeof(t_env_list));
+	if (!elem)
+		return (NULL);
+	elem->next = NULL;
+	elem->key = NULL;
+	elem->val = NULL;
+	if (env_set_key(elem, env_key))
+	{
+		free(elem);
+		elem = NULL;
+	}
+	else if (env_set_val(elem, env_val))
+	{
+		free(elem->key);
+		free(elem);
+		elem = NULL;
+	}
+	return (elem);
+}
+
 t_env_list	*new_env_elem(char *env_var)
 {
 	int			del_pos;
-	t_env_list	*elem;
 	char		*env_key;
 	char		*env_val;
 
@@ -47,24 +82,7 @@ t_env_list	*new_env_elem(char *env_var)
 			return (NULL);
 		}
 	}
-	elem = (t_env_list *)malloc(sizeof(t_env_list));
-	if (!elem)
-		return (NULL);
-	elem->next = NULL;
-	elem->key = NULL;
-	elem->val = NULL;
-	if (env_set_key(elem, env_key))
-	{
-		free(elem);
-		elem = NULL;
-	}
-	else if (env_set_val(elem, env_val))
-	{
-		free(elem->key);
-		free(elem);
-		elem = NULL;
-	}
-	return (elem);
+	return (new_elem_alloc(env_key, env_val));
 }
 
 void    env_list_clear(t_minishell *minishell)

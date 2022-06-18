@@ -1,6 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_cmd.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/19 01:12:56 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/19 01:44:32 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-int	exec_cmd(t_minishell *minishell, t_pipe_line *pipe_line, int fd_in, int fd_out)
+int	exec_cmd(
+	t_minishell *minishell,
+	t_pipe_line *pipe_line,
+	int fd_in,
+	int fd_out)
 {
 	int		err;
 	int		built_in;
@@ -23,8 +39,13 @@ int	exec_cmd(t_minishell *minishell, t_pipe_line *pipe_line, int fd_in, int fd_o
 	fatal_err(minishell, pipe_line, errno);
 }
 
-int	exec_in_fork(t_minishell *minishell, t_pipe_line *pipe_line, t_pipe_desc *pipe_desc)
+int	exec_in_fork(
+	t_minishell *minishell,
+	t_pipe_line *pipe_line,
+	t_pipe_desc *pipe_desc)
 {
+	int	err;
+
 	pipe_line->pid = fork();
 	if (pipe_line->pid > 0)
 	{
@@ -39,8 +60,9 @@ int	exec_in_fork(t_minishell *minishell, t_pipe_line *pipe_line, t_pipe_desc *pi
 		errno = 0;
 		sighandler_set(EXEC_MODE_CHILD);
 		safe_close(pipe_desc->fd_to_close);
-		exec_cmd(minishell, pipe_line, pipe_desc->fd_in, pipe_desc->fd_out);
-		fatal_err(minishell, pipe_line, errno);
+		err = exec_cmd(minishell,
+				pipe_line, pipe_desc->fd_in, pipe_desc->fd_out);
+		fatal_err(minishell, pipe_line, err);
 	}
 	return (M_ERR);
 }

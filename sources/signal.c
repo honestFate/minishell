@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signal.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/19 01:13:25 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/19 01:22:41 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static void	interactive_sigint(int signal)
@@ -23,7 +35,9 @@ static int	sethandler_sigquit(int mode)
 	struct sigaction	sig_default;
 
 	ft_memset(&sig_default, 0, sizeof(sig_default));
-	if (mode == DEFAULT_MODE || mode == HEREDOC_MODE || mode == EXEC_MODE_PARENT)
+	if (mode == DEFAULT_MODE
+		|| mode == HEREDOC_MODE
+		|| mode == EXEC_MODE_PARENT)
 		sig_default.sa_handler = SIG_IGN;
 	else if (mode == EXEC_MODE_CHILD)
 		sig_default.sa_handler = SIG_DFL;

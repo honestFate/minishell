@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_sort.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/19 01:12:42 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/19 01:16:17 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static void	select_sort_util(t_env_list *ptr, t_env_list *j, t_env_list *pos)
@@ -11,7 +23,7 @@ static void	select_sort_util(t_env_list *ptr, t_env_list *j, t_env_list *pos)
 		temp_key = ptr->key;
 		temp_val = ptr->val;
 		j = ptr->next;
-		while(j)
+		while (j)
 		{
 			if (ft_strcmp(j->key, temp_key) < 0)
 			{
@@ -29,7 +41,7 @@ static void	select_sort_util(t_env_list *ptr, t_env_list *j, t_env_list *pos)
 	}
 }
 
-void select_sort(t_env_list *ptr)
+void	select_sort(t_env_list *ptr)
 {
 	t_env_list	*j;
 	t_env_list	*pos;

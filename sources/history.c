@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   history.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/19 01:13:14 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/19 01:36:30 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	open_history_file(char *home_path)
@@ -35,6 +47,7 @@ void	ft_read_history(int fd)
 int	put_history_line(char *line, int fd)
 {
 	int	err;
+
 	add_history(line);
 	if (fd <= 0)
 		return (0);

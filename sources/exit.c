@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/19 01:13:02 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/19 01:42:43 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-int	ft_exit(t_minishell *minishell, t_pipe_line *pipe_line) //need to make better parser 
+int	ft_exit(t_minishell *minishell, t_pipe_line *pipe_line)
 {
 	int				i;
 	unsigned char	exit_status;

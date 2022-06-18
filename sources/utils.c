@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/19 01:13:35 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/19 01:29:05 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 /*
@@ -31,31 +43,6 @@ int	is_builtin(char *cmd)
 	if (!strcmp(cmd, "exit"))
 		return (BIN_EXIT);
 	return (-1);
-}
-
-/*
-return zero if char is space sym, otherwise return >zero 
-*/
-int	ft_isspace(char c)
-{
-	if (c == '\t' || c == '\n'
-		|| c == '\v' || c == '\f'
-		|| c == '\r' || c == ' ')
-		return (1);
-	return (0);
-}
-
-/*
-free NULL-terminated str array
-*/
-void	free_str_arr(char **strings)
-{
-	int	i;
-
-	i = 0;
-	while (strings[i])
-		free(strings[i++]);
-	free(strings);
 }
 
 static int	check_overflow_util(char *s, long long int i, int flag)
@@ -101,30 +88,4 @@ int	check_overflow(char *s)
 		++s;
 	}
 	return (M_OK);
-}
-
-void	safe_free(void *data)
-{
-	if (data)
-		free(data);
-}
-
-int safe_close(int fd)
-{
-	if (fd >= 0)
-		return (close(fd));
-	return (M_OK);
-}
-
-int	list_len(t_pipe_line *data)
-{
-	int	i;
-
-	i = 0;
-	while (data)
-	{
-		data = data->next;
-		++i;
-	}
-	return (i);
 }

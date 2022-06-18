@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   defenv_init.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/19 01:12:34 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/19 01:14:21 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-static int set_pwd(t_minishell *minishell)
+static int	set_pwd(t_minishell *minishell)
 {
 	char		*path;
 	char		*pwd;
@@ -10,14 +22,14 @@ static int set_pwd(t_minishell *minishell)
 	if (getcwd(path, PATH_MAX + 1) == NULL)
 	{
 		free(path);
-		return(M_ERR);
+		return (M_ERR);
 	}
 	if (ft_getenv(minishell->env_list, "PWD") == NULL)
 	{
 		pwd = ft_strjoin("PWD=", path);
 		free(path);
 		if (!pwd)
-			return(M_ERR);
+			return (M_ERR);
 		pwd_var = new_env_elem(pwd);
 		free(pwd);
 		if (!pwd_var)
@@ -25,11 +37,11 @@ static int set_pwd(t_minishell *minishell)
 		env_add_back(&minishell->env_list, pwd_var);
 	}
 	else
-		return(envlist_change_val(minishell->env_list, "PWD", path));
+		return (envlist_change_val(minishell->env_list, "PWD", path));
 	return (M_OK);
 }
 
-static int set_shlvl(t_minishell *minishell)
+static int	set_shlvl(t_minishell *minishell)
 {
 	char		*lvl;
 	char		*shlvl;
@@ -42,12 +54,12 @@ static int set_shlvl(t_minishell *minishell)
 	{
 		lvl = ft_itoa(ft_atoi(lvl) + 1);
 		if (!lvl)
-			return(M_ERR);
+			return (M_ERR);
 		shlvl = ft_strjoin("SHLVL=", lvl);
 		free(lvl);
 	}
 	if (!shlvl)
-		return(M_ERR);
+		return (M_ERR);
 	shlvl_var = new_env_elem(shlvl);
 	free(shlvl);
 	if (!shlvl_var)
@@ -56,7 +68,7 @@ static int set_shlvl(t_minishell *minishell)
 	return (M_OK);
 }
 
-static int set_underscore(t_minishell *minishell)
+static int	set_underscore(t_minishell *minishell)
 {
 	t_env_list	*underscore_var;
 
@@ -69,7 +81,7 @@ static int set_underscore(t_minishell *minishell)
 	return (M_OK);
 }
 
-static int set_oldpwd(t_minishell *minishell)
+static int	set_oldpwd(t_minishell *minishell)
 {
 	t_env_list	*oldpwd_var;
 
