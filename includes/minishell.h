@@ -110,13 +110,13 @@ typedef struct	s_minishell
 }				t_minishell;
 
 //built-in
-int	ft_pwd(t_minishell *minishell, char **argv);
-int	ft_cd(t_minishell *minishell, char **argv);
-int	ft_env(t_minishell *minishell, char **argv);
-int	ft_export(t_minishell *minishell, char **argv);
-int	ft_echo(t_minishell *minishell, char **argv);
-int	ft_unset(t_minishell *minishell, char **argv);
-int	ft_exit(t_minishell *minishell, char **argv);
+int	ft_pwd(t_minishell *minishell, t_pipe_line *pipe_line);
+int	ft_cd(t_minishell *minishell, t_pipe_line *pipe_line);
+int	ft_env(t_minishell *minishell, t_pipe_line *pipe_line);
+int	ft_export(t_minishell *minishell, t_pipe_line *pipe_line);
+int	ft_echo(t_minishell *minishell, t_pipe_line *pipe_line);
+int	ft_unset(t_minishell *minishell, t_pipe_line *pipe_line);
+int	ft_exit(t_minishell *minishell, t_pipe_line *pipe_line);
 
 //env
 int	env_copy(t_minishell *minishell, char **env);
@@ -160,7 +160,7 @@ int	list_len(t_pipe_line *data);
 void	free_pipe_line(t_pipe_line *pipe_line);
 void	print_error(char *cmd, int error, char *arg);
 char	*ft_getenv(t_env_list *env_list, char *name);
-void	fatal_err(t_minishell *minishell, t_pipe_line *pipe_line, int err);
+void	exit_minishell(t_minishell *minishell, t_pipe_line *pipe_line, int err, char *arg);
 
 //signal
 int	sighandler_set(int mode);

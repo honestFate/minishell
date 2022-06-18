@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void	interactive_sigint(int signal)
+static void	interactive_sigint(int signal)
 {
 	if (signal == SIGINT)
 	{
@@ -12,13 +12,13 @@ void	interactive_sigint(int signal)
 	}
 }
 
-void	heredoc_sigint(int signal)
+static void	heredoc_sigint(int signal)
 {
 	if (signal == SIGINT)
 		close(STDIN_FILENO);
 }
 
-int	sethandler_sigquit(int mode)
+static int	sethandler_sigquit(int mode)
 {
 	struct sigaction	sig_default;
 
@@ -32,7 +32,7 @@ int	sethandler_sigquit(int mode)
 	return (sigaction(SIGQUIT, &sig_default, NULL));
 }
 
-int	sethandler_sigint(int mode)
+static int	sethandler_sigint(int mode)
 {
 	struct sigaction	sig_default;
 
