@@ -25,6 +25,7 @@
 # define USAGE_ERROR 256
 # define INVALID_IDENTIFER 257
 # define NOT_NUM_ARG 258
+# define BUILTIN_FAIL 259
 # define BIN_ECHO 0
 # define BIN_CD 1
 # define BIN_PWD 2

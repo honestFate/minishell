@@ -75,6 +75,8 @@ void	select_exit_status(int err)
 {
 	if (err == EXIT_SUCCESS)
 		exit(0);
+	if (err == BUILTIN_FAIL)
+		exit(2);
 	if (err == EACCES)
 		exit(126);
 	if (err == ENOENT)
