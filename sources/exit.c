@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:13:02 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:42:43 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 02:48:05 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,5 @@ int	ft_exit(t_minishell *minishell, t_pipe_line *pipe_line)
 	}
 	exit_status = ft_atoi(pipe_line->argv[1]);
 	exit_minishell(minishell, pipe_line, EXIT_SUCCESS, NULL);
+	return (M_ERR);
 }

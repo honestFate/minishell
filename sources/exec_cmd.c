@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:56 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:44:32 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 03:22:09 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,14 @@ int	exec_cmd(
 		return (M_ERR);
 	built_in = is_builtin(pipe_line->cmd);
 	if (built_in >= 0)
-		return (minishell->built_in[built_in](minishell, pipe_line->argv));
+		return (minishell->built_in[built_in](minishell, pipe_line));
 	err = find_cmd(pipe_line->cmd, minishell->env_list, &path_to_cmd);
 	if (path_to_cmd == NULL)
-		fatal_err(minishell, pipe_line, err);
+		exit_minishell(minishell, pipe_line, err, NULL);
 	envarr_change_val(minishell->env_arr, "_", path_to_cmd);
 	execve(path_to_cmd, pipe_line->argv, minishell->env_arr);
-	fatal_err(minishell, pipe_line, errno);
+	exit_minishell(minishell, pipe_line, errno, NULL);
+	return (M_ERR);
 }
 
 int	exec_in_fork(
@@ -62,7 +63,7 @@ int	exec_in_fork(
 		safe_close(pipe_desc->fd_to_close);
 		err = exec_cmd(minishell,
 				pipe_line, pipe_desc->fd_in, pipe_desc->fd_out);
-		fatal_err(minishell, pipe_line, err);
+		exit_minishell(minishell, pipe_line, err, NULL);
 	}
 	return (M_ERR);
 }

@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:13:25 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:22:41 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 03:20:52 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static int	sethandler_sigint(int mode)
 
 int	sighandler_set(int mode)
 {
-	if (sethandler_sigint(mode) || sethandler_sigint(mode))
+	if (sethandler_sigint(mode) || sethandler_sigquit(mode))
 		return (M_ERR);
 	return (M_OK);
 }

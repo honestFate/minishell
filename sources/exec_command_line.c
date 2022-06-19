@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:59 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 02:09:27 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 02:39:25 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,25 +56,24 @@ int	start_exec_pipe(t_minishell *minishell, t_pipe_line *pipe_line)
 int	exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 {
 	t_std_backup	std_backup;
-	t_pipe_line		*pipe_line;
 	int				exit_status;
 
 	exit_status = -1;
 	if (stdbackup_copy(&std_backup))
-		fatal_err(minishell, pipe_line, errno);
+		exit_minishell(minishell, pipe_line, errno, NULL);
 	if (pipeline_set_fd(minishell, pipe_line))
 	{
 		if (isatty(STDIN_FILENO) || stdbackup_set(&std_backup))
-			fatal_err(minishell, pipe_line, errno);
+			exit_minishell(minishell, pipe_line, errno, NULL);
 	}
 	if (!pipe_line->next && is_builtin(pipe_line->cmd) >= 0)
 		g_exit_status = exec_cmd(minishell, pipe_line, -1, -1);
 	else if (start_exec_pipe(minishell, pipe_line))
-		fatal_err(minishell, pipe_line, errno);
+		exit_minishell(minishell, pipe_line, errno, NULL);
 	if (stdbackup_set(&std_backup) || stdbackup_close(&std_backup))
-		fatal_err(minishell, pipe_line, errno);
+		exit_minishell(minishell, pipe_line, errno, NULL);
 	if (sighandler_set(DEFAULT_MODE))
-		fatal_err(minishell, pipe_line, errno);
+		exit_minishell(minishell, pipe_line, errno, NULL);
 	get_correct_status(exit_status);
 	return (g_exit_status);
 }

@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:13:11 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:38:27 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 03:20:15 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 static int	heredoc_readline(
 	t_minishell *minishell,
 	t_redirect *r_info,
-	int fd,
-	char *fname)
+	int fd)
 {
 	int		err;
 	char	*line;
@@ -41,13 +40,12 @@ char	*heredoc(t_minishell *minishell, t_redirect *r_info, int index)
 {
 	int		fd;
 	char	*fname;
-	char	*line;
 
 	fname = heredoc_fname(index);
 	if (!fname)
 		return (NULL);
 	fd = open(fname, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	if (fd < 0 || heredoc_readline(minishell, r_info, fd, fname))
+	if (fd < 0 || heredoc_readline(minishell, r_info, fd))
 	{
 		safe_close(fd);
 		free(fname);

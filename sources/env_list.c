@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:39 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 02:07:16 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 03:21:06 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,8 +109,6 @@ static int	fill_list(t_minishell *minishell, char **envp)
 
 int	env_to_list(t_minishell *minishell, char **envp)
 {
-	t_env_list	*ptr;
-
 	minishell->env_list = NULL;
 	minishell->env_list_size = 0;
 	if (!envp[0])

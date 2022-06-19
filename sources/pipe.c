@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:13:17 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:36:09 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 02:40:12 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static void	next_pipe(
 		pipe_exec(minishell, pipe_line->next,
 			pipe_desc_init(SIMPLE, p[READ_END], pipe_desc->fd_out, -1));
 		if (safe_close(p[READ_END]))
-			fatal_err(minishell, pipe_line, errno);
+			exit_minishell(minishell, pipe_line, errno, NULL);
 	}	
 }
 
@@ -61,7 +61,7 @@ int	pipe_exec(
 	if (pipe_desc->exec_type == PIPE)
 	{
 		if (pipe(p))
-			fatal_err(minishell, pipe_line, errno);
+			exit_minishell(minishell, pipe_line, errno, NULL);
 		pipe_exec(minishell, pipe_line,
 			pipe_desc_init(
 				SIMPLE,
@@ -69,11 +69,11 @@ int	pipe_exec(
 				p[WRITE_END],
 				p[READ_END]));
 		if (safe_close(p[WRITE_END]) || safe_close(pipe_desc->fd_in))
-			fatal_err(minishell, pipe_line, errno);
+			exit_minishell(minishell, pipe_line, errno, NULL);
 		next_pipe(minishell, pipe_line, pipe_desc, p);
 		free(pipe_desc);
 	}
 	else if (exec_in_fork(minishell, pipe_line, pipe_desc))
-		fatal_err(minishell, pipe_line, errno);
+		exit_minishell(minishell, pipe_line, errno, NULL);
 	return (M_OK);
 }

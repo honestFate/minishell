@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 02:11:00 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 02:21:54 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 03:18:51 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,9 @@ typedef struct s_pipe_line
 
 typedef struct s_env_list
 {
-	char		*key;
-	char		*val;
-	t_env_list	*next;
+	char				*key;
+	char				*val;
+	struct s_env_list	*next;
 }				t_env_list;
 
 typedef struct s_std_backup
@@ -116,7 +116,7 @@ typedef struct s_minishell
 	int			exit_status;
 	int			history_fd;
 	int			(*built_in[BIN_NUM])(
-			t_minishell *minishell,
+			struct s_minishell *minishell,
 			t_pipe_line *pipe_line);
 }				t_minishell;
 
@@ -149,8 +149,26 @@ int			envlist_change_val(t_env_list *env_list, char *key, char *new_val);
 int			envarr_change_val(char **env, char *key, char *val);
 int			envvar_validate(char *var);
 
-//exec
+//find_cmd
 int			find_cmd(char *cmd, t_env_list *env_list, char **path_to_cmd);
+
+//exec_command_line
+void	get_correct_status(int exit_status);
+int	start_exec_pipe(t_minishell *minishell, t_pipe_line *pipe_line);
+int	exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line);
+
+//exec_cmd
+int	exec_cmd(t_minishell *minishell, t_pipe_line *pipe_line,
+	int fd_in, int fd_out);
+int	exec_in_fork(t_minishell *minishell, t_pipe_line *pipe_line,
+	t_pipe_desc *pipe_desc);
+
+//pipe
+t_pipe_desc	*pipe_desc_init(int exec_type, int fd_in, int fd_out,
+	int fd_to_close);
+int	pipe_exec(t_minishell *minishell, t_pipe_line *pipe_line,
+	t_pipe_desc *pipe_desc);
+
 
 //history
 int			open_history_file(char *home_path);
@@ -168,9 +186,10 @@ void		safe_free(void *data);
 int			list_len(t_pipe_line *data);
 
 //err_handler
-void		free_pipe_line(t_pipe_line *pipe_line);
+char		*ft_strerr(int error);
 void		print_error(char *cmd, int error, char *arg);
 char		*ft_getenv(t_env_list *env_list, char *name);
+void		select_exit_status(int err);
 void		exit_minishell(t_minishell *minishell,
 				t_pipe_line *pipe_line, int err, char *arg);
 
@@ -179,6 +198,13 @@ int			sighandler_set(int mode);
 
 //heredoc
 char		*heredoc(t_minishell *minishell, t_redirect *r_info, int index);
+
+//heredoc_utils
+char		*env_get_val(t_env_list *env_list, char *key);
+char		*get_word(char *str);
+int			expand_var(t_minishell *minishell, char *line, int fd, int i);
+int			heredoc_put_str(t_minishell *minishell, char *line, int fd, int expand);
+char		*heredoc_fname(int index);
 
 //redirect
 int			make_redirect(t_minishell *minishell,
@@ -195,5 +221,9 @@ int			stdbackup_close(t_std_backup *std_backup);
 
 //defenv_init
 int			default_env(t_minishell *minishell);
+
+//free_struct
+void		free_pipe_line(t_pipe_line *pipe_line);
+void		redirect_clear(t_redirect **redirect_arr);
 
 #endif
