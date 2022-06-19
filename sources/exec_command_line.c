@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:59 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 02:39:25 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 06:36:18 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,23 @@ void	get_correct_status(int exit_status)
 {
 	if (exit_status >= 0)
 	{
-		if (WIFEXITED(exit_status) && !WEXITSTATUS(exit_status))
+		if (WIFEXITED(exit_status) && !WEXITSTATUS(exit_status) && !WIFSIGNALED(exit_status))
+		{
+			ft_putendl_fd("exit status 0", STDERR_FILENO);
 			g_exit_status = 0;
+		}
 		else
 		{
 			if (WIFSIGNALED(exit_status))
+			{
+				ft_putendl_fd("ebnuli signalom", STDERR_FILENO);
 				g_exit_status = WTERMSIG(exit_status) + 128;
+			}
 			else
+			{
+				ft_putendl_fd("command obosralas", STDERR_FILENO);
 				g_exit_status = WEXITSTATUS(exit_status);
+			}
 		}
 	}
 }
@@ -36,6 +45,7 @@ int	start_exec_pipe(t_minishell *minishell, t_pipe_line *pipe_line)
 		pipe_exec(minishell, pipe_line, pipe_desc_init(PIPE, -1, -1, -1));
 	else
 		pipe_exec(minishell, pipe_line, pipe_desc_init(SIMPLE, -1, -1, -1));
+	ft_putendl_fd("waiting child finish", STDERR_FILENO);
 	while (pipe_line)
 	{
 		if (pipe_line->pid > 0)
@@ -43,14 +53,31 @@ int	start_exec_pipe(t_minishell *minishell, t_pipe_line *pipe_line)
 			if (pipe_line->next)
 			{
 				if (waitpid(pipe_line->pid, NULL, WUNTRACED) < 0)
+				{
+					ft_putendl_fd("waitpid err", STDERR_FILENO);
 					return (M_ERR);
+				}
 			}
-			else if (waitpid(pipe_line->pid, &exit_status, WUNTRACED))
+			else if (waitpid(pipe_line->pid, &exit_status, WUNTRACED) < 0)
+			{
+				ft_putendl_fd("waitpid err", STDERR_FILENO);
 				return (M_ERR);
+			}
 		}
 		pipe_line = pipe_line->next;
 	}
 	return (exit_status);
+}
+
+char	*get_last_argv(char **argv)
+{
+	int	i;
+
+	i = 0;
+	while (argv[i])
+		++i;
+	printf("last argv is - %s\n", argv[i - 1]);
+	return (ft_strdup(argv[i - 1]));
 }
 
 int	exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
@@ -59,21 +86,34 @@ int	exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 	int				exit_status;
 
 	exit_status = -1;
+	ft_putendl_fd("making backup", STDERR_FILENO);
 	if (stdbackup_copy(&std_backup))
 		exit_minishell(minishell, pipe_line, errno, NULL);
+	ft_putendl_fd("redirecting", STDERR_FILENO);
 	if (pipeline_set_fd(minishell, pipe_line))
 	{
 		if (isatty(STDIN_FILENO) || stdbackup_set(&std_backup))
 			exit_minishell(minishell, pipe_line, errno, NULL);
 	}
+	ft_putendl_fd("start exec", STDERR_FILENO);
+	if (!pipe_line->next)
+		envlist_change_val(minishell->env_list, "_",
+			get_last_argv(pipe_line->argv));
 	if (!pipe_line->next && is_builtin(pipe_line->cmd) >= 0)
 		g_exit_status = exec_cmd(minishell, pipe_line, -1, -1);
-	else if (start_exec_pipe(minishell, pipe_line))
-		exit_minishell(minishell, pipe_line, errno, NULL);
+	else
+	{
+		exit_status = start_exec_pipe(minishell, pipe_line);
+		if (exit_status < 0)
+			exit_minishell(minishell, pipe_line, errno, NULL);
+	}
+	ft_putendl_fd("std from backup", STDERR_FILENO);
 	if (stdbackup_set(&std_backup) || stdbackup_close(&std_backup))
 		exit_minishell(minishell, pipe_line, errno, NULL);
+	ft_putendl_fd("sig set default", STDERR_FILENO);
 	if (sighandler_set(DEFAULT_MODE))
 		exit_minishell(minishell, pipe_line, errno, NULL);
+	ft_putendl_fd("getting exit status", STDERR_FILENO);
 	get_correct_status(exit_status);
 	return (g_exit_status);
 }

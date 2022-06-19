@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:56 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 03:22:09 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 05:46:25 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,9 @@ int	exec_cmd(
 	if (built_in >= 0)
 		return (minishell->built_in[built_in](minishell, pipe_line));
 	err = find_cmd(pipe_line->cmd, minishell->env_list, &path_to_cmd);
-	if (path_to_cmd == NULL)
+	ft_putstr_fd("find err - ", STDERR_FILENO);
+	ft_putnbr_fd(err, STDERR_FILENO);
+	if (err)
 		exit_minishell(minishell, pipe_line, err, NULL);
 	envarr_change_val(minishell->env_arr, "_", path_to_cmd);
 	execve(path_to_cmd, pipe_line->argv, minishell->env_arr);
@@ -54,6 +56,7 @@ int	exec_in_fork(
 		if (cmd_redirect_close(pipe_line->redirect_in)
 			|| cmd_redirect_close(pipe_line->redirect_out))
 			return (M_ERR);
+		ft_putendl_fd("parrent fork ok", STDERR_FILENO);
 		return (M_OK);
 	}
 	else if (pipe_line->pid == 0)
@@ -61,8 +64,10 @@ int	exec_in_fork(
 		errno = 0;
 		sighandler_set(EXEC_MODE_CHILD);
 		safe_close(pipe_desc->fd_to_close);
+		ft_putendl_fd("child go exec", STDERR_FILENO);
 		err = exec_cmd(minishell,
 				pipe_line, pipe_desc->fd_in, pipe_desc->fd_out);
+		ft_putendl_fd("child is not ok", STDERR_FILENO);
 		exit_minishell(minishell, pipe_line, err, NULL);
 	}
 	return (M_ERR);

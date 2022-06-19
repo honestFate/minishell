@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:54 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:56:39 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 05:32:24 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 char	*ft_strerr(int error)
 {
-	if (error <= 255)
+	if (error <= 102)
 		return (strerror(error));
 	if (error == INVALID_IDENTIFER)
 		return ("not a valid identifier");
@@ -25,6 +25,8 @@ char	*ft_strerr(int error)
 
 void	print_error(char *cmd, int error, char *arg)
 {
+	if (error == 0)
+		return ;
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	ft_putstr_fd(cmd, STDERR_FILENO);
 	ft_putstr_fd(": ", STDERR_FILENO);
@@ -53,13 +55,14 @@ void	select_exit_status(int err)
 void	exit_minishell(
 	t_minishell *minishell,
 	t_pipe_line *pipe_line,
-	int err,
+	int exit_status,
 	char *arg)
 {
-	print_error(pipe_line->cmd, err, arg);
+	ft_putendl_fd("exiting minishell", STDERR_FILENO);
+	print_error(pipe_line->cmd, exit_status, arg);
 	free_pipe_line(pipe_line);
 	free_str_arr(minishell->env_arr);
 	env_list_clear(minishell);
-	free(minishell);
-	select_exit_status(err);
+	//free(minishell);
+	select_exit_status(exit_status);
 }

@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:30 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:12:31 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 04:57:11 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,12 @@ int	ft_cd(t_minishell *minishell, t_pipe_line *pipe_line)
 	chdir(target_path);
 	free(target_path);
 	if (!errno)
-		envlist_change_val(minishell->env_list, "PWD", target_path);
+	{
+		envlist_change_val(minishell->env_list, "OLDPWD", ft_strdup(current_path));
+		if (!getcwd(current_path, PATH_MAX + 1))
+			return (M_ERR);
+		envlist_change_val(minishell->env_list, "PWD", ft_strdup(current_path));
+	}
 	else
 	{
 		print_error(pipe_line->argv[0], errno, pipe_line->argv[1]);

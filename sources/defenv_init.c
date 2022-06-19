@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:34 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:14:21 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 06:21:27 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,10 @@ static int	set_shlvl(t_minishell *minishell)
 
 	lvl = ft_getenv(minishell->env_list, "SHLVL");
 	if (lvl == NULL)
+	{
+		ft_putendl_fd("NO SHLVL", 1);
 		shlvl = ft_strdup("SHLVL=1");
+	}
 	else
 	{
 		lvl = ft_itoa(ft_atoi(lvl) + 1);

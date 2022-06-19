@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:58:23 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:58:30 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 06:34:21 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,8 @@ int	envlist_add_var(t_minishell *minishell, char **argv)
 			env_list_clear(minishell);
 			return (errno);
 		}
-		env_add_back(&minishell->env_list, elem);
+		else
+			env_add_back(&minishell->env_list, elem);
 		++i;
 	}
 	return (M_OK);
@@ -89,7 +90,15 @@ void	env_add_back(t_env_list **env_list, t_env_list *new_elem)
 		return ;
 	}
 	ptr = *env_list;
-	while (ptr->next)
+	while (ptr->next && ft_strcmp(ptr->key, new_elem->key))
 		ptr = ptr->next;
-	ptr->next = new_elem;
+	if (!ft_strcmp(ptr->key, new_elem->key))
+	{
+		if (new_elem->val)
+			envlist_change_val(*env_list, ptr->key, new_elem->val);
+		free(new_elem->key);
+		free(new_elem);
+	}
+	else
+		ptr->next = new_elem;
 }

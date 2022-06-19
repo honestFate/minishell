@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:13:17 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 02:40:12 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 03:49:40 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,9 @@ int	pipe_exec(
 		free(pipe_desc);
 	}
 	else if (exec_in_fork(minishell, pipe_line, pipe_desc))
+	{
+		ft_putendl_fd("err in fork", STDERR_FILENO);
 		exit_minishell(minishell, pipe_line, errno, NULL);
+	}
 	return (M_OK);
 }

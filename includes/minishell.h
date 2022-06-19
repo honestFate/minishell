@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 02:11:00 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 03:18:51 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 06:59:41 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,20 +148,21 @@ void		set_increment(int *arr);
 int			envlist_change_val(t_env_list *env_list, char *key, char *new_val);
 int			envarr_change_val(char **env, char *key, char *val);
 int			envvar_validate(char *var);
+int			envvar_validate_new(char *var);
 
 //find_cmd
 int			find_cmd(char *cmd, t_env_list *env_list, char **path_to_cmd);
 
 //exec_command_line
-void	get_correct_status(int exit_status);
-int	start_exec_pipe(t_minishell *minishell, t_pipe_line *pipe_line);
-int	exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line);
+void		get_correct_status(int exit_status);
+int			start_exec_pipe(t_minishell *minishell, t_pipe_line *pipe_line);
+int			exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line);
 
 //exec_cmd
-int	exec_cmd(t_minishell *minishell, t_pipe_line *pipe_line,
-	int fd_in, int fd_out);
-int	exec_in_fork(t_minishell *minishell, t_pipe_line *pipe_line,
-	t_pipe_desc *pipe_desc);
+int			exec_cmd(t_minishell *minishell, t_pipe_line *pipe_line,
+				int fd_in, int fd_out);
+int			exec_in_fork(t_minishell *minishell, t_pipe_line *pipe_line,
+				t_pipe_desc *pipe_desc);
 
 //pipe
 t_pipe_desc	*pipe_desc_init(int exec_type, int fd_in, int fd_out,

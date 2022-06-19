@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:13:05 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:42:24 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 05:55:21 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	export_new_val(t_minishell *minishell, t_pipe_line *pipe_line)
 	err = M_OK;
 	while (pipe_line->argv[i])
 	{
-		if (envvar_validate(pipe_line->argv[i]))
+		if (envvar_validate_new(pipe_line->argv[i]))
 		{
 			err = M_ERR;
 			print_error(
@@ -47,7 +47,12 @@ int	ft_export(t_minishell *minishell, t_pipe_line *pipe_line)
 	while (ptr)
 	{
 		if (ft_strcmp(ptr->key, "_") != 0)
-			printf("declare -x %s=\"%s\"\n", ptr->key, ptr->val);
+		{
+			if (ptr->val)
+				printf("declare -x %s=\"%s\"\n", ptr->key, ptr->val);
+			else
+				printf("declare -x %s\n", ptr->key);
+		}
 		ptr = ptr->next;
 	}
 	return (M_OK);

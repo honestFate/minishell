@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:13:07 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:13:08 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 05:24:08 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int	find_cmd(char *cmd, t_env_list *env_list, char **path_to_cmd)
 	char	**envp_path;
 
 	*path_to_cmd = NULL;
-	access((const char *)cmd, X_OK);
+	access(cmd, X_OK);
 	err = errno;
 	errno = 0;
 	if (!err)
@@ -64,7 +64,7 @@ int	find_cmd(char *cmd, t_env_list *env_list, char **path_to_cmd)
 	{
 		envp_path = ft_split(ft_getenv(env_list, "PATH"), ':');
 		if (!envp_path)
-			return (errno);
+			return (ENOENT);
 		err = find_cmd_in_path(envp_path, cmd, path_to_cmd);
 		i = 0;
 		while (envp_path[i])

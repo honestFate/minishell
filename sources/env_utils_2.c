@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:46 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:12:47 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 04:30:53 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,13 @@
 
 int	envlist_change_val(t_env_list *env_list, char *key, char *new_val)
 {
-	ft_putendl_fd(new_val, 1);
 	while (env_list)
 	{
-		if (!strcmp(env_list->key, key))
+		if (!ft_strcmp(env_list->key, key))
 			return (env_set_val(env_list, new_val));
 		env_list = env_list->next;
 	}
-	return (M_ERR);
+	return (M_OK);
 }
 
 int	envarr_change_val(char **env, char *key, char *val)

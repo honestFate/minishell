@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:13:11 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 03:20:15 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/19 04:01:07 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int	heredoc_readline(
 
 	while (1)
 	{
-		err = 1;
+		err = -1;
 		line = readline(TERM_CYAN "> " TERM_RESET);
 		if (!isatty(STDIN_FILENO))
 			err = M_ERR;
