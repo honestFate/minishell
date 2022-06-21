@@ -56,7 +56,6 @@ int	exec_in_fork(
 		if (cmd_redirect_close(pipe_line->redirect_in)
 			|| cmd_redirect_close(pipe_line->redirect_out))
 			return (M_ERR);
-		ft_putendl_fd("parrent fork ok", STDERR_FILENO);
 		return (M_OK);
 	}
 	else if (pipe_line->pid == 0)
@@ -64,11 +63,11 @@ int	exec_in_fork(
 		errno = 0;
 		sighandler_set(EXEC_MODE_CHILD);
 		safe_close(pipe_desc->fd_to_close);
-		ft_putendl_fd("child go exec", STDERR_FILENO);
 		err = exec_cmd(minishell,
 				pipe_line, pipe_desc->fd_in, pipe_desc->fd_out);
-		ft_putendl_fd("child is not ok", STDERR_FILENO);
 		exit_minishell(minishell, pipe_line, err, NULL);
 	}
+	else
+		exit_minishell(minishell, pipe_line, errno, NULL);
 	return (M_ERR);
 }

@@ -70,7 +70,8 @@ int	heredoc_put_str(t_minishell *minishell, char *line, int fd, int expand)
 	i = 0;
 	while (line[i])
 	{
-		if (expand && line[i] == '$' && line[i + 1])
+		if (expand && line[i] == '$' && line[i + 1]
+			&& (i > 0 && line[i - 1] == '\\'))
 		{
 			if (expand_var(minishell, line, fd, i))
 				return (M_ERR);

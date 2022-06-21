@@ -12,31 +12,41 @@
 
 #include "minishell.h"
 
+static int	open_rdir(t_minishell *minishell, t_redirect **redirect, int index, int i)
+{
+	if (redirect[i]->type == REDIRECT_HEREDOC)
+	{
+		redirect[i]->fname = heredoc(minishell, redirect[i], index);
+		if (!redirect[i]->fname)
+			return (M_ERR);
+		redirect[i]->fd = open(redirect[i]->fname, O_RDONLY);
+	}
+	else if (redirect[i]->type == REDIRECT_IN)
+		redirect[i]->fd = open(redirect[i]->arg2, O_RDONLY);
+	else if (redirect[i]->type == REDIRECT_OUT)
+		redirect[i]->fd = open(redirect[i]->arg2, O_WRONLY | O_CREAT, 0644);
+	else if (redirect[i]->type == REDIRECT_OUT_APPEND)
+		redirect[i]->fd = open(redirect[i]->arg2,
+				O_WRONLY | O_APPEND | O_CREAT, 0644);
+	return (M_OK);
+}
+
 int	make_redirect(t_minishell *minishell, t_redirect **redirect, int index)
 {
 	int	i;
 
-	i = -1;
+	i = 0;
 	if (!redirect)
 		return (M_OK);
-	while (redirect[++i])
+	while (redirect[i])
 	{
-		if (redirect[i]->type == REDIRECT_HEREDOC)
+		if (open_rdir(minishell, redirect, index, i))
 		{
-			redirect[i]->fname = heredoc(minishell, redirect[i], index);
-			if (!redirect[i]->fname)
-				return (M_ERR);
-			redirect[i]->fd = open(redirect[i]->fname, O_RDONLY);
-		}
-		else if (redirect[i]->type == REDIRECT_IN)
-			redirect[i]->fd = open(redirect[i]->arg2, O_RDONLY);
-		else if (redirect[i]->type == REDIRECT_OUT)
-			redirect[i]->fd = open(redirect[i]->arg2, O_WRONLY | O_CREAT, 0644);
-		else if (redirect[i]->type == REDIRECT_OUT_APPEND)
-			redirect[i]->fd = open(redirect[i]->arg2,
-					O_WRONLY | O_APPEND | O_CREAT, 0644);
-		if (redirect[i]->fd < 0)
+			print_error(redirect[i]->arg2, errno, NULL);
+			errno = 0;
 			return (M_ERR);
+		}
+		++i;
 	}
 	return (M_OK);
 }

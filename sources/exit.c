@@ -19,7 +19,7 @@ int	ft_exit(t_minishell *minishell, t_pipe_line *pipe_line)
 
 	i = 0;
 	if (!pipe_line->argv[1])
-		exit_minishell(minishell, pipe_line, EXIT_SUCCESS, NULL);
+		exit_minishell(minishell, pipe_line, g_exit_status, NULL);
 	while (ft_isspace(pipe_line->argv[1][i]))
 		++i;
 	if (check_overflow(pipe_line->argv[1]) == M_ERR)

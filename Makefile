@@ -23,7 +23,7 @@ all:	$(NAME)
 
 $(NAME): $(OBJS)
 	@make -C $(LIB_DIR)
-	$(CC) -o $(NAME) $(OBJS) $(CFLAGS) -ltermcap $(LIB_DIR)$(LIB) $(RL_LIB)
+	$(CC) -o $(NAME) $(OBJS) $(CFLAGS) -ltermcap $(LIB_DIR)$(LIB) -lreadline
 
 obj/%.o: $(SRC)%.c $(INCLUDES:%=$(INC)%)
 	@mkdir -p obj
