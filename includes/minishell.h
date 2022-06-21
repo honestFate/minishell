@@ -33,11 +33,13 @@
 # define TERM_TYPE_BUFF 2048
 # define READ_END 0
 # define WRITE_END 1
+# define BUILTIN_FAIL 2
 # define USAGE_ERROR 256
 # define INVALID_IDENTIFER 257
 # define NOT_NUM_ARG 258
-# define BUILTIN_FAIL 259
 # define NO_HOME_VAR 260
+# define NO_OLDPWD_VAR 261
+# define TOO_MANY_ARGS 262
 # define BIN_ECHO 0
 # define BIN_CD 1
 # define BIN_PWD 2
@@ -51,6 +53,7 @@
 # endif
 # define M_OK 0
 # define M_ERR 1
+# define HEREDOC_ERR 2
 # define SIMPLE 0
 # define PIPE 1
 # define PIPE_FIRST 2
@@ -120,6 +123,28 @@ typedef struct s_minishell
 			struct s_minishell *minishell,
 			t_pipe_line *pipe_line);
 }				t_minishell;
+
+typedef struct s_rdir
+{
+	int			heredock_quote;
+	int			type;
+	int			fd;
+	char		*arg;
+	void		*next;
+}				t_rdir;
+
+typedef struct s_node
+{
+	int			need_to_assign;
+	char		*cmd;
+	char		**arg; 
+	int			n_arg;
+	int			n_rdir_arg;
+	int			init_rdir;
+	void		*next;
+	void		*prev;
+	t_rdir		*rdir;
+}				t_node;
 
 //built-in
 int			ft_pwd(t_minishell *minishell, t_pipe_line *pipe_line);
@@ -193,7 +218,7 @@ void		print_error(char *cmd, int error, char *arg);
 char		*ft_getenv(t_env_list *env_list, char *name);
 void		select_exit_status(int err);
 void		exit_minishell(t_minishell *minishell,
-				t_pipe_line *pipe_line, int err, char *arg);
+				t_pipe_line *pipe_line, int err);
 
 //signal
 int			sighandler_set(int mode);
@@ -227,5 +252,8 @@ int			default_env(t_minishell *minishell);
 //free_struct
 void		free_pipe_line(t_pipe_line *pipe_line);
 void		redirect_clear(t_redirect **redirect_arr);
+
+//cursed
+char		**argv_crutch(char **argv, char *cmd, int n_arg);
 
 #endif

@@ -18,7 +18,7 @@ static int	open_rdir(t_minishell *minishell, t_redirect **redirect, int index, i
 	{
 		redirect[i]->fname = heredoc(minishell, redirect[i], index);
 		if (!redirect[i]->fname)
-			return (M_ERR);
+			return (HEREDOC_ERR);
 		redirect[i]->fd = open(redirect[i]->fname, O_RDONLY);
 	}
 	else if (redirect[i]->type == REDIRECT_IN)
@@ -34,18 +34,18 @@ static int	open_rdir(t_minishell *minishell, t_redirect **redirect, int index, i
 int	make_redirect(t_minishell *minishell, t_redirect **redirect, int index)
 {
 	int	i;
+	int	err;
 
 	i = 0;
 	if (!redirect)
 		return (M_OK);
 	while (redirect[i])
 	{
-		if (open_rdir(minishell, redirect, index, i))
-		{
-			print_error(redirect[i]->arg2, errno, NULL);
-			errno = 0;
+		err = open_rdir(minishell, redirect, index, i);
+		if (err == HEREDOC_ERR)
+			return (err);
+		if (err == M_ERR || errno)
 			return (M_ERR);
-		}
 		++i;
 	}
 	return (M_OK);
@@ -78,7 +78,7 @@ int	cmd_redirect_close(t_redirect **redirect_arr)
 		return (M_OK);
 	while (redirect_arr[i])
 	{
-		if (close(redirect_arr[i]->fd))
+		if (safe_close(redirect_arr[i]->fd))
 			return (M_ERR);
 		redirect_arr[i]->fd = -1;
 		++i;
@@ -89,15 +89,19 @@ int	cmd_redirect_close(t_redirect **redirect_arr)
 int	pipeline_set_fd(t_minishell *minishell, t_pipe_line *pipe_line)
 {
 	int	index;
+	int	err;
 
 	index = 0;
 	while (pipe_line)
 	{
 		if (sighandler_set(HEREDOC_MODE))
 			return (M_ERR);
-		if (make_redirect(minishell, pipe_line->redirect_in, index)
-			|| make_redirect(minishell, pipe_line->redirect_out, index))
-			return (M_ERR);
+		err = make_redirect(minishell, pipe_line->redirect_in, index);
+		if (err)
+			return (err);
+		err = make_redirect(minishell, pipe_line->redirect_out, index);
+		if (err)
+			return (err);
 		if (sighandler_set(DEFAULT_MODE))
 			return (M_ERR);
 		pipe_line = pipe_line->next;

@@ -21,16 +21,20 @@ int	export_new_val(t_minishell *minishell, t_pipe_line *pipe_line)
 	err = M_OK;
 	while (pipe_line->argv[i])
 	{
+		if (i == 1 && pipe_line->argv[i][0] == '-' && pipe_line->argv[i][1])
+		{
+			print_error(pipe_line->argv[0], INVALID_IDENTIFER,
+				pipe_line->argv[i]);
+			return (BUILTIN_FAIL);
+		}
 		if (envvar_validate_new(pipe_line->argv[i]))
 		{
 			err = M_ERR;
-			print_error(
-				pipe_line->argv[0],
-				INVALID_IDENTIFER,
+			print_error(pipe_line->argv[0], INVALID_IDENTIFER,
 				pipe_line->argv[i]);
 		}
 		if (envlist_add_var(minishell, pipe_line->argv))
-			return (M_ERR);
+			return (BUILTIN_FAIL);
 		++i;
 	}
 	return (err);

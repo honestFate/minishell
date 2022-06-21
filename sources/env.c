@@ -17,7 +17,10 @@ int	ft_env(t_minishell *minishell, t_pipe_line *pipe_line)
 	t_env_list	*ptr;
 
 	if (pipe_line->argv[1])
-		return (USAGE_ERROR);
+	{
+		print_error(pipe_line->argv[0], USAGE_ERROR, pipe_line->argv[1]);
+		return (BUILTIN_FAIL);
+	}
 	ptr = minishell->env_list;
 	while (ptr)
 	{

@@ -48,6 +48,7 @@ char	*heredoc(t_minishell *minishell, t_redirect *r_info, int index)
 	if (fd < 0 || heredoc_readline(minishell, r_info, fd))
 	{
 		safe_close(fd);
+		unlink(fname);
 		free(fname);
 		fname = NULL;
 	}

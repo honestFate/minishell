@@ -24,9 +24,7 @@ int	ft_unset(t_minishell *minishell, t_pipe_line *pipe_line)
 		if (envvar_validate(pipe_line->argv[i]))
 		{
 			err = M_ERR;
-			print_error(
-				pipe_line->argv[0],
-				INVALID_IDENTIFER,
+			print_error(pipe_line->argv[0], INVALID_IDENTIFER,
 				pipe_line->argv[i]);
 		}
 		else
