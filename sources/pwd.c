@@ -17,13 +17,19 @@ int	ft_pwd(t_minishell *minishell, t_pipe_line *pipe_line)
 	char	path[PATH_MAX + 1];
 
 	(void)minishell;
+	if (pipe_line->argv[1])
+	{
+		print_error(pipe_line->argv[0], USAGE_ERROR,
+				pipe_line->argv[1]);
+		return (BUILTIN_FAIL);
+	}
 	if (getcwd(path, PATH_MAX + 1) != NULL)
 		printf("%s\n", path);
 	else
 	{
 		print_error(pipe_line->argv[0], errno, NULL);
 		errno = 0;
-		return (M_ERR);
+		return (BUILTIN_FAIL);
 	}
 	return (M_OK);
 }

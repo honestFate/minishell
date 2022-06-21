@@ -23,6 +23,7 @@ int	exec_cmd(
 	char	*path_to_cmd;
 
 	path_to_cmd = NULL;
+	//pipe_line->argv = argv_crutch(pipe_line->argv, pipe_line->cmd, 0);
 	if (redirect_pipe(fd_in, fd_out))
 		return (M_ERR);
 	if (cmd_redirect(pipe_line->redirect_in)
@@ -32,13 +33,20 @@ int	exec_cmd(
 	if (built_in >= 0)
 		return (minishell->built_in[built_in](minishell, pipe_line));
 	err = find_cmd(pipe_line->cmd, minishell->env_list, &path_to_cmd);
-	ft_putstr_fd("find err - ", STDERR_FILENO);
-	ft_putnbr_fd(err, STDERR_FILENO);
-	if (err)
-		exit_minishell(minishell, pipe_line, err, NULL);
+	if (err == EACCES)
+	{
+		print_error(pipe_line->cmd, EACCES, NULL);
+		exit_minishell(minishell, pipe_line, 126);
+	}
+	if (err == ENOENT)
+	{
+		print_error(pipe_line->cmd, ENOENT, NULL);
+		exit_minishell(minishell, pipe_line, 127);
+	}
 	envarr_change_val(minishell->env_arr, "_", path_to_cmd);
 	execve(path_to_cmd, pipe_line->argv, minishell->env_arr);
-	exit_minishell(minishell, pipe_line, errno, NULL);
+	print_error(pipe_line->cmd, errno, NULL);
+	exit_minishell(minishell, pipe_line, M_ERR);
 	return (M_ERR);
 }
 
@@ -47,8 +55,6 @@ int	exec_in_fork(
 	t_pipe_line *pipe_line,
 	t_pipe_desc *pipe_desc)
 {
-	int	err;
-
 	pipe_line->pid = fork();
 	if (pipe_line->pid > 0)
 	{
@@ -56,7 +62,6 @@ int	exec_in_fork(
 		if (cmd_redirect_close(pipe_line->redirect_in)
 			|| cmd_redirect_close(pipe_line->redirect_out))
 			return (M_ERR);
-		ft_putendl_fd("parrent fork ok", STDERR_FILENO);
 		return (M_OK);
 	}
 	else if (pipe_line->pid == 0)
@@ -64,11 +69,15 @@ int	exec_in_fork(
 		errno = 0;
 		sighandler_set(EXEC_MODE_CHILD);
 		safe_close(pipe_desc->fd_to_close);
-		ft_putendl_fd("child go exec", STDERR_FILENO);
-		err = exec_cmd(minishell,
-				pipe_line, pipe_desc->fd_in, pipe_desc->fd_out);
-		ft_putendl_fd("child is not ok", STDERR_FILENO);
-		exit_minishell(minishell, pipe_line, err, NULL);
+		exec_cmd(minishell,
+			pipe_line, pipe_desc->fd_in, pipe_desc->fd_out);
+		print_error(pipe_line->cmd, errno, NULL);
+		exit_minishell(minishell, pipe_line, M_ERR);
+	}
+	else
+	{
+		print_error(pipe_line->cmd, errno, NULL);
+		exit_minishell(minishell, pipe_line, M_ERR);
 	}
 	return (M_ERR);
 }

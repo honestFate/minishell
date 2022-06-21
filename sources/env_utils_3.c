@@ -41,11 +41,15 @@ void	envlist_delone(t_minishell *minishell, char *key)
 	if (minishell->env_list)
 	{
 		if (!ft_strcmp(minishell->env_list->key, key))
+		{
+			tmp = minishell->env_list;
 			minishell->env_list = minishell->env_list->next;
+			env_del_elem(tmp);
+		}
 		else
 		{
 			ptr = minishell->env_list;
-			while (ptr->next)
+			while (ptr && ptr->next)
 			{
 				if (!ft_strcmp(ptr->next->key, key))
 				{

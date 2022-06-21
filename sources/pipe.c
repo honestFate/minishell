@@ -47,7 +47,10 @@ static void	next_pipe(
 		pipe_exec(minishell, pipe_line->next,
 			pipe_desc_init(SIMPLE, p[READ_END], pipe_desc->fd_out, -1));
 		if (safe_close(p[READ_END]))
-			exit_minishell(minishell, pipe_line, errno, NULL);
+		{
+			print_error(pipe_line->cmd, errno, NULL);
+			exit_minishell(minishell, pipe_line, M_ERR);
+		}
 	}	
 }
 
@@ -61,7 +64,10 @@ int	pipe_exec(
 	if (pipe_desc->exec_type == PIPE)
 	{
 		if (pipe(p))
-			exit_minishell(minishell, pipe_line, errno, NULL);
+		{
+			print_error(pipe_line->cmd, errno, NULL);
+			exit_minishell(minishell, pipe_line, M_ERR);
+		}
 		pipe_exec(minishell, pipe_line,
 			pipe_desc_init(
 				SIMPLE,
@@ -69,14 +75,20 @@ int	pipe_exec(
 				p[WRITE_END],
 				p[READ_END]));
 		if (safe_close(p[WRITE_END]) || safe_close(pipe_desc->fd_in))
-			exit_minishell(minishell, pipe_line, errno, NULL);
+		{
+			print_error(pipe_line->cmd, errno, NULL);
+			exit_minishell(minishell, pipe_line, M_ERR);
+		}
 		next_pipe(minishell, pipe_line, pipe_desc, p);
 		free(pipe_desc);
 	}
 	else if (exec_in_fork(minishell, pipe_line, pipe_desc))
 	{
 		ft_putendl_fd("err in fork", STDERR_FILENO);
-		exit_minishell(minishell, pipe_line, errno, NULL);
+		{
+			print_error(pipe_line->cmd, errno, NULL);
+			exit_minishell(minishell, pipe_line, M_ERR);
+		}
 	}
 	return (M_OK);
 }

@@ -20,6 +20,12 @@ char	*ft_strerr(int error)
 		return ("not a valid identifier");
 	if (error == NOT_NUM_ARG)
 		return ("numeric argument required");
+	if (error == USAGE_ERROR)
+		return ("invalid option");
+	if (error == NO_HOME_VAR)
+		return ("HOME not set");
+	if (error == NO_OLDPWD_VAR)
+		return ("OLDPWD not set");
 	return ("unknow error");
 }
 
@@ -30,7 +36,12 @@ void	print_error(char *cmd, int error, char *arg)
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	ft_putstr_fd(cmd, STDERR_FILENO);
 	ft_putstr_fd(": ", STDERR_FILENO);
-	if (arg)
+	if (error == USAGE_ERROR && arg)
+	{
+		ft_putstr_fd(arg, STDERR_FILENO);
+		ft_putstr_fd(": ", STDERR_FILENO);
+	}
+	else if (arg)
 	{
 		ft_putstr_fd("`", STDERR_FILENO);
 		ft_putstr_fd(arg, STDERR_FILENO);
@@ -40,7 +51,7 @@ void	print_error(char *cmd, int error, char *arg)
 	ft_putendl_fd(ft_strerr(error), STDERR_FILENO);
 }
 
-void	select_exit_status(int err)
+/*void	select_exit_status(int err)
 {
 	if (err == EXIT_SUCCESS)
 		exit(0);
@@ -50,18 +61,17 @@ void	select_exit_status(int err)
 		exit(126);
 	if (err == ENOENT)
 		exit(127);
-}
+}*/
 
 void	exit_minishell(
 	t_minishell *minishell,
 	t_pipe_line *pipe_line,
-	int exit_status,
-	char *arg)
+	int exit_status)
 {
 	ft_putendl_fd("exiting minishell", STDERR_FILENO);
 	free_pipe_line(pipe_line);
 	free_str_arr(minishell->env_arr);
 	env_list_clear(minishell);
 	//free(minishell);
-	select_exit_status(exit_status);
+	exit(exit_status);
 }

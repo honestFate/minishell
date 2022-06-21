@@ -22,13 +22,16 @@ void	redirect_clear(t_redirect **redirect_arr)
 	while (redirect_arr[i])
 	{
 		if (redirect_arr[i]->type == REDIRECT_HEREDOC)
-		{	
-			if (unlink(redirect_arr[i]->fname))
+		{
+			if (redirect_arr[i]->fname)
 			{
-				ft_putendl_fd(ft_strerr(errno), STDERR_FILENO);
-				ft_putendl_fd(redirect_arr[i]->fname, 1);
+				if (unlink(redirect_arr[i]->fname))
+				{
+					ft_putendl_fd(ft_strerr(errno), STDERR_FILENO);
+					ft_putendl_fd(redirect_arr[i]->fname, 1);
+				}
+				free(redirect_arr[i]->fname);
 			}
-			free(redirect_arr[i]->fname);
 		}	
 		free(redirect_arr[i]->arg2);
 		free(redirect_arr[i]);
