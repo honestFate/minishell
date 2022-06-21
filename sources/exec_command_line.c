@@ -94,7 +94,7 @@ int	exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 		envlist_change_val(minishell->env_list, "_",
 			get_last_argv(pipe_line->argv));
 	else
-		envlist_change_val(minishell->env_list, "_", "");
+		envlist_change_val(minishell->env_list, "_", ft_strdup(""));
 	if (!pipe_line->next && is_builtin(pipe_line->cmd) >= 0)
 		g_exit_status = exec_cmd(minishell, pipe_line, -1, -1);
 	else
