@@ -59,7 +59,6 @@ void	exit_minishell(
 	char *arg)
 {
 	ft_putendl_fd("exiting minishell", STDERR_FILENO);
-	print_error(pipe_line->cmd, exit_status, arg);
 	free_pipe_line(pipe_line);
 	free_str_arr(minishell->env_arr);
 	env_list_clear(minishell);

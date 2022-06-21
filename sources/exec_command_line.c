@@ -96,7 +96,10 @@ int	exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 			exit_minishell(minishell, pipe_line, errno, NULL);
 	}
 	ft_putendl_fd("start exec", STDERR_FILENO);
-	if (!pipe_line->next)
+	if (pipe_line->next)
+		envlist_change_val(minishell->env_list, "",
+			get_last_argv(pipe_line->argv));
+	else
 		envlist_change_val(minishell->env_list, "_",
 			get_last_argv(pipe_line->argv));
 	if (!pipe_line->next && is_builtin(pipe_line->cmd) >= 0)
