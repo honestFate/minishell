@@ -51,18 +51,6 @@ void	print_error(char *cmd, int error, char *arg)
 	ft_putendl_fd(ft_strerr(error), STDERR_FILENO);
 }
 
-/*void	select_exit_status(int err)
-{
-	if (err == EXIT_SUCCESS)
-		exit(0);
-	if (err == BUILTIN_FAIL)
-		exit(2);
-	if (err == EACCES)
-		exit(126);
-	if (err == ENOENT)
-		exit(127);
-}*/
-
 void	exit_minishell(
 	t_minishell *minishell,
 	t_pipe_line *pipe_line,

@@ -121,7 +121,7 @@ int	exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 }
 
 //TEST
-int	main(int argc, char *argv[], char *envp[])
+/*int	main(int argc, char *argv[], char *envp[])
 {
 	(void)argc;
 	(void)argv;
@@ -238,3 +238,4 @@ int	main(int argc, char *argv[], char *envp[])
 	}
 }
 //END TEST
+*/

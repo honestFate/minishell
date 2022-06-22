@@ -1,42 +1,57 @@
-CC = clang
-INC = ./includes/
-SRC = ./sources/
-OBJ = ./obj/
-CFLAGS = -Wall -Wextra -g -fPIE
-INCLUDES = minishell.h color.h
-LIB_DIR = ./libft/
-LIB = libft.a
-RL_LIB = /Users/ndillon/.brew/Cellar/readline/8.1.2/lib/*.a
+CC			:=	clang
+BUILDDIR	:=	object
+CFLAGS		:=	-Wall -Wextra -Werror -g -fPIE
+INC			:=	-I./includes/ -I./gnl/ -I./libft/
+INCLUDES	:=	minishell.h color.h
+LIB			:=	libft/libft.a -ltermcap -lreadline
 
-SRCS =	cd.c			env.c					env_sort.c		env_utils_3.c	exec_command_line.c	\
-		find_cmd.c		get_next_line_utils.c	history.c		redirect.c		unset.c				\
-		defenv_init.c	env_copy.c				env_utils.c		err_handler.c	exit.c				\
-		free_struct.c	heredoc.c				pipe.c			signal.c		utils.c				\
-		echo.c			env_list.c				env_utils_2.c	exec_cmd.c		export.c			\
-		get_next_line.c	heredoc_utils.c			pwd.c			std_backup.c	utils_2.c			\
+EXECUTE_SRC	=	cd.c					env.c							env_sort.c				env_utils_3.c					\
+				find_cmd.c				history.c						redirect.c				unset.c							\
+				defenv_init.c			env_copy.c						env_utils.c				err_handler.c					\
+				free_struct.c			heredoc.c						pipe.c					signal.c						\
+				echo.c					env_list.c						env_utils_2.c			exec_cmd.c						\
+				heredoc_utils.c			pwd.c							std_backup.c			utils_2.c						\
+				exec_command_line.c		exit.c							utils.c					export.c						\
 
-OBJS = $(SRCS:%.c=$(OBJ)%.o)
+PARSER_SRC	=	argument_count.c		fast_qout_check_utils.c			parser_utils.c			rdir_count.c					\
+				rewrite_dollar_utils.c	work_with_dollar_utils.c 		work_with_pipe.c		before_inside_quotes.c			\
+				fast_quot_check.c		preparing_for_the_structure.c	rdir_fast_check.c		work_with_dollar.c				\
+				work_with_env.c			work_with_quotes.c				check_dollar.c			fill_argument.c					\
+				not_env.c    			preparser.c						rdir_fast_check_utils.c	work_with_dollar_env.c			\
+				work_with_node.c		work_with_quotes_utils.c		check_flag_env.c		fill_command.c					\
+				parser.c				preparser_utils.c				rewrite_dollar.c		work_with_dollar_env_utils.c	\
+				work_with_node_utils.c	work_with_rdir.c
 
-NAME = minishell
+GNL_SRC		=	get_next_line.c			get_next_line_utils.c
 
-all:	$(NAME)
+SOURCES := $(PARSER_SRC:%=parser/%) $(EXECUTE_SRC:%=sources/%) $(GNL_SRC:%=gnl/%)
+OBJECTS := $(patsubst %,$(BUILDDIR)/%,$(SOURCES:.c=.o))
 
-$(NAME): $(OBJS)
-	@make -C $(LIB_DIR)
-	$(CC) -o $(NAME) $(OBJS) $(CFLAGS) -ltermcap $(LIB_DIR)$(LIB) -lreadline
 
-obj/%.o: $(SRC)%.c $(INCLUDES:%=$(INC)%)
-	@mkdir -p obj
-	$(CC) $(CFLAGS) -c $< -o $@ -I$(INC) -I$(LIB_DIR) -I./gnl/
+NAME	=	minishell
+
+all: $(NAME)
+
+$(NAME): $(OBJECTS)
+	@echo "Linking..."
+	@make -C ./libft/
+	$(CC) $^ -o $(NAME) $(LIB)
+
+$(BUILDDIR)/%.o: ./%.c
+	mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
 clean:
-	@make -C $(LIB_DIR) clean
-	rm -rf ${OBJ}
+	@make -C ./libft/ clean
+	$(RM) -r $(BUILDDIR)
 
 fclean:	clean
-	@make -C $(LIB_DIR) fclean
-	rm -rf $(NAME)
+	@make -C ./libft/ fclean
+	$(RM) -r $(NAME)
 
 re: fclean all
 
-.PHONY:	all clean fclean re
+norm:
+	@norminette *.c *.h
+
+.PHONY: clean fclean re
