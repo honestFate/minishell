@@ -19,9 +19,9 @@ int	open_history_file(char *home_path)
 
 	history_file = ft_strjoin(home_path, "/.minishell_history");
 	if (!history_file)
-		return (errno);
+		return (-1);
 	printf("%s\n", history_file);
-	fd = open((const char *)history_file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+	fd = open((const char *)history_file, O_RDWR | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
 	free(history_file);
 	printf("%s\n", strerror(errno));
 	return (fd);

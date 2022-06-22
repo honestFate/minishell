@@ -52,27 +52,11 @@ int	cycle(char **env, t_params *data, int res)
 			if (line)
 				free(line);
 			print_node(data->list);
+			//exec_pipe_line();
 			clear_list(&(data->list));
 		}
 		if (!res)
 			free(line);
 		res = 0;
 	}
-}
-
-int	main(int argc, char **argv, char **env)
-{
-	t_params	*data;
-	int			res;
-
-	res = 0;
-	data = malloc(sizeof(t_params));
-	if (!data)
-		return (0);
-	data_init(data);
-	(void)argc;
-	(void)argv;
-	//sighandler_set(DEFAULT_MODE);
-	cycle(env, data, res);
-	return (EXIT_SUCCESS);
 }

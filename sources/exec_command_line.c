@@ -27,27 +27,27 @@ void	get_correct_status(int exit_status)
 	}
 }
 
-int	start_exec_pipe(t_minishell *minishell, t_pipe_line *pipe_line)
+int	start_exec_pipe(t_params *data)
 {
 	int	exit_status;
 
-	if (pipe_line->next)
-		pipe_exec(minishell, pipe_line, pipe_desc_init(PIPE, -1, -1, -1));
+	if (data->list->next)
+		pipe_exec(data, pipe_desc_init(PIPE, -1, -1, -1));
 	else
-		pipe_exec(minishell, pipe_line, pipe_desc_init(SIMPLE, -1, -1, -1));
-	while (pipe_line)
+		pipe_exec(data, pipe_desc_init(SIMPLE, -1, -1, -1));
+	while (data->list)
 	{
-		if (pipe_line->pid > 0)
+		if (data->list->pid > 0)
 		{
-			if (pipe_line->next)
+			if (data->list->next)
 			{
-				if (waitpid(pipe_line->pid, NULL, WUNTRACED) < 0)
+				if (waitpid(data->list->pid, NULL, WUNTRACED) < 0)
 					return (M_ERR);
 			}
-			else if (waitpid(pipe_line->pid, &exit_status, WUNTRACED) < 0)
+			else if (waitpid(data->list->pid, &exit_status, WUNTRACED) < 0)
 				return (M_ERR);
 		}
-		pipe_line = pipe_line->next;
+		data->list = data->list->next;
 	}
 	return (exit_status);
 }
@@ -62,7 +62,7 @@ char	*get_last_argv(char **argv)
 	return (ft_strdup(argv[i - 1]));
 }
 
-int	exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
+int	exec_pipe_line(t_params *data)
 {
 	int				err;
 	t_std_backup	std_backup;
@@ -71,50 +71,50 @@ int	exec_pipe_line(t_minishell *minishell, t_pipe_line *pipe_line)
 	exit_status = -1;
 	if (stdbackup_copy(&std_backup))
 	{
-		print_error(pipe_line->cmd, errno, NULL);
-		exit_minishell(minishell, pipe_line, M_ERR);
+		print_error(data->list->cmd, errno, NULL);
+		exit_minishell(data, M_ERR);
 	}
-	err = pipeline_set_fd(minishell, pipe_line);
+	err = pipeline_set_fd(data);
 	if (err)
 	{
 		if (err != HEREDOC_ERR)
 		{
-			print_error(pipe_line->cmd, errno, NULL);
+			print_error(data->list->cmd, errno, NULL);
 			errno = 0;
 		}
 		if (stdbackup_set(&std_backup))
 		{
-			print_error(pipe_line->cmd, errno, NULL);
-			exit_minishell(minishell, pipe_line, M_ERR);
+			print_error(data->list->cmd, errno, NULL);
+			exit_minishell(data, M_ERR);
 		}
 		g_exit_status = 1;
 		return (g_exit_status);
 	}
-	if (!pipe_line->next)
-		envlist_change_val(minishell->env_list, "_",
-			get_last_argv(pipe_line->argv));
+	if (!data->list->next)
+		envlist_change_val(data->minishell->env_list, "_",
+			get_last_argv(data->list->arg));
 	else
-		envlist_change_val(minishell->env_list, "_", ft_strdup(""));
-	if (!pipe_line->next && is_builtin(pipe_line->cmd) >= 0)
-		g_exit_status = exec_cmd(minishell, pipe_line, -1, -1);
+		envlist_change_val(data->minishell->env_list, "_", ft_strdup(""));
+	if (!data->list->next && is_builtin(data->list->cmd) >= 0)
+		g_exit_status = exec_cmd(data, -1, -1);
 	else
 	{
-		exit_status = start_exec_pipe(minishell, pipe_line);
+		exit_status = start_exec_pipe(data);
 		if (exit_status < 0)
 		{
-			print_error(pipe_line->cmd, errno, NULL);
-			exit_minishell(minishell, pipe_line, M_ERR);
+			print_error(data->list->cmd, errno, NULL);
+			exit_minishell(data, M_ERR);
 		}
 	}
 	if (stdbackup_set(&std_backup) || stdbackup_close(&std_backup))
 	{
-		print_error(pipe_line->cmd, errno, NULL);
-		exit_minishell(minishell, pipe_line, M_ERR);
+		print_error(data->list->cmd, errno, NULL);
+		exit_minishell(data, M_ERR);
 	}
 	if (sighandler_set(DEFAULT_MODE))
 	{
-		print_error(pipe_line->cmd, errno, NULL);
-		exit_minishell(minishell, pipe_line, M_ERR);
+		print_error(data->list->cmd, errno, NULL);
+		exit_minishell(data, M_ERR);
 	}
 	get_correct_status(exit_status);
 	return (g_exit_status);

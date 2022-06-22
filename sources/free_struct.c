@@ -12,6 +12,16 @@
 
 #include "minishell.h"
 
+void	free_minishell(t_minishell *minishell)
+{
+	if (minishell->env_arr)
+		free_str_arr(minishell->env_arr);
+	if (minishell->env_list)
+		env_list_clear(minishell);
+	safe_close(minishell->history_fd);
+	free(minishell);
+}
+
 void	redirect_clear(t_redirect **redirect_arr)
 {
 	int	i;

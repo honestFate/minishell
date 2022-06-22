@@ -12,6 +12,7 @@ EXECUTE_SRC	=	cd.c					env.c							env_sort.c				env_utils_3.c					\
 				echo.c					env_list.c						env_utils_2.c			exec_cmd.c						\
 				heredoc_utils.c			pwd.c							std_backup.c			utils_2.c						\
 				exec_command_line.c		exit.c							utils.c					export.c						\
+				minishell_struct.c
 
 PARSER_SRC	=	argument_count.c		fast_qout_check_utils.c			parser_utils.c			rdir_count.c					\
 				rewrite_dollar_utils.c	work_with_dollar_utils.c 		work_with_pipe.c		before_inside_quotes.c			\
@@ -24,7 +25,7 @@ PARSER_SRC	=	argument_count.c		fast_qout_check_utils.c			parser_utils.c			rdir_c
 
 GNL_SRC		=	get_next_line.c			get_next_line_utils.c
 
-SOURCES := $(PARSER_SRC:%=parser/%) $(EXECUTE_SRC:%=sources/%) $(GNL_SRC:%=gnl/%)
+SOURCES := $(PARSER_SRC:%=parser/%) $(EXECUTE_SRC:%=sources/%) $(GNL_SRC:%=gnl/%) main.c
 OBJECTS := $(patsubst %,$(BUILDDIR)/%,$(SOURCES:.c=.o))
 
 

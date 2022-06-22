@@ -67,6 +67,7 @@
 # define EXEC_MODE_CHILD 3
 //FOR TEST
 volatile int	g_exit_status;
+
 typedef struct s_redirect
 {
 	int		type;
@@ -87,7 +88,6 @@ typedef struct s_pipe_line
 	struct s_pipe_line	*next;
 	struct s_pipe_line	*prev;
 }				t_pipe_line;
-//END
 
 typedef struct s_env_list
 {
@@ -124,6 +124,8 @@ typedef struct s_minishell
 			t_pipe_line *pipe_line);
 }				t_minishell;
 
+//--------------PARSER_DEFINE--------------//
+
 typedef struct s_rdir
 {
 	int			heredock_quote;
@@ -141,10 +143,38 @@ typedef struct s_node
 	int			n_arg;
 	int			n_rdir_arg;
 	int			init_rdir;
+	int			pid;
 	void		*next;
 	void		*prev;
 	t_rdir		*rdir;
 }				t_node;
+
+typedef struct s_params
+{
+	int			key;
+	char		*line;
+	t_node		*node;
+	t_node		*list;
+	t_minishell	*minishell;
+}				t_params;
+
+typedef struct s_quotes
+{
+	int		i_arg;
+	int		i;
+	int		j;
+	int		start;
+	int		end;
+	int		pass_quote;
+	int		env_i;
+	int		len_env;
+	char	flag;
+}			t_quotes;
+
+//------------PARSER_DEFINE_END------------//
+
+//init
+int			init(t_params *data, char *envp);
 
 //built-in
 int			ft_pwd(t_minishell *minishell, t_pipe_line *pipe_line);
@@ -250,10 +280,80 @@ int			stdbackup_close(t_std_backup *std_backup);
 int			default_env(t_minishell *minishell);
 
 //free_struct
+void		free_minishell(t_minishell *minishell);
 void		free_pipe_line(t_pipe_line *pipe_line);
 void		redirect_clear(t_redirect **redirect_arr);
 
 //cursed
 char		**argv_crutch(char **argv, char *cmd, int n_arg);
+
+//parser
+void	write_one_sym(t_params *data, t_quotes *quot, char *line);
+int		next_quot_check(char *line, int i);
+int		not_env(t_quotes *quot, t_params *data, char *line);
+int		check_multi_dollars(char *line, t_quotes *quot, t_params *data, int counter);
+int		get_new_len(char *line, t_quotes *quot, char *env_line);
+int		is_dollar_ahead(char *line, int i);
+int		get_finish(char *line, int i);
+int		is_it_env(char **env, char *line, int end, int start);
+int		get_env(t_params *data, t_quotes *quot, char *line, char **env);
+int		check_command_before(char *line, int i);
+int		get_len(char *bf_dollar, char *af_dollar, char *instead_of);
+int		argument_count(t_params *data, t_quotes *quot, int count, int flag);
+int		find_arguments(t_params *data, t_quotes *quot);
+int		check_ahead(char *line, int i);
+int		check_after_rdir(char *line, int i, char *type);
+int		find_arguments(t_params *data, t_quotes *quot);
+int		before_after(char *line, int i, int type);
+int		fast_quotes_check(char *line);
+int		parser(char *line, char **env, t_params *data);
+int		heredock_behind(char *line, int i);
+int		is_rdir(char sym);
+int		is_it_letter(char sym);
+int		even_or_odd(int dight);
+int		is_nothing(char sym);
+int		start_info(t_params *data, char *line, int *i, int *len);
+int		check_len_of_command(char *line, int i);
+int		we_need_this_quotes(char *line, int i, char flag);
+int		dollar_in_double_quotes(t_quotes *quot, char *line);
+int		start_command(t_quotes *quot, t_params *data, char *line, char **env);
+int		pipe_bad_syntax(char *line);
+int		rdir_bad_syntax(char *line);
+void	check_flag(t_params *data, t_quotes *quot, char *line);
+void	copy_env(t_quotes *quot, t_params *data, char *env_line);
+void	env_join(t_params *data, t_quotes *quot, char *env_value);
+void	get_new_memory(t_params *data, int len, t_quotes *quot);
+void	data_node_init(t_params *data);
+void	fill_argument(t_params *data, t_quotes *quot);
+void	fill_command(t_params *data, t_quotes *quot);
+void	find_command(t_params *data, t_quotes *quot);
+void	check_dollar_with_single(t_params *data, int i);
+void	check_quotes_utils(char *line, t_params *data, char **env);
+void	param_init(t_quotes *tmp_quot);
+void	before_inside(t_quotes *tmp_quot, t_params *data, char *line, char **env);
+void	not_quotes(char *line, t_quotes *tmp_quot, t_params *data);
+void	inside_quotes(char *line, t_quotes *tmp_quot, t_params *data, char **env);
+void	work_with_dollar(t_quotes *quot, char *line, t_params *data, char **env);
+void	work_with_dollar_outside(char *line, t_quotes *quot, t_params *data, char **env);
+void	check_dollar(char *line, int i, int steps_next_quote, int count);
+void	last_preparation(t_params *data, t_quotes *quot, int i, int flag);
+void	add_rdir(t_rdir **rdir);
+void	clear_list(t_node **list);
+void	print_list(t_node *list);
+void	print_node(t_node *node);
+void	print_node2(t_node *node);
+void	correct_count(t_params *data, int *i);
+void	start_work_rdir(t_params *data, t_quotes *quot);
+void	rewrite(t_params *data, int i);
+void	check_dollar_with_quest(t_params *data);
+void	rewrite_new_line(char *bf_dollar, int *i, char *instead_of, t_params *data);
+void	rewrite_new_line_utils(char *af_dollar, int i, t_params *data);
+void	find_new_command(t_quotes *quot, t_params *data, char *line, char **env);
+char	*ft_get_value(const char *key, char **env);
+t_node	*add_node(t_node **list, t_node *node);
+t_node	*new_node(char *cmd, char **arg);
+int		cycle(char **env, t_params *data, int res);
+void	data_init(t_params *data);
+int		heredock_behind(char *line, int i);
 
 #endif
