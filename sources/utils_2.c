@@ -45,7 +45,10 @@ void	free_str_arr(char **strings, int n_arg)
 	if (strings)
 	{
 		while (i < n_arg)
-			free(strings[i++]);
+		{
+			free(strings[i]);
+			++i;
+		}
 		free(strings);
 	}
 }

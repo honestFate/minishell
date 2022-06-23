@@ -25,7 +25,7 @@ static char	*get_tail(char *tail)
 		free(tail);
 		return (NULL);
 	}
-	new_tail = ft_strdup(start + 1);
+	new_tail = ft_strdupp(start + 1);
 	free(tail);
 	return (new_tail);
 }

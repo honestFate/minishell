@@ -65,7 +65,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (start);
 }
 
-char	*ft_strdup(const char *s1)
+char	*ft_strdupp(const char *s1)
 {
 	char	*res;
 	char	*ptr;
