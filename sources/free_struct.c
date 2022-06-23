@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:56:45 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:56:52 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/23 05:50:11 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,57 +15,36 @@
 void	free_minishell(t_minishell *minishell)
 {
 	if (minishell->env_arr)
-		free_str_arr(minishell->env_arr);
+		free_strarr_terminated(minishell->env_arr);
 	if (minishell->env_list)
 		env_list_clear(minishell);
 	safe_close(minishell->history_fd);
 	free(minishell);
 }
 
-void	redirect_clear(t_redirect **redirect_arr)
+void	redirect_clear(t_node *node)
 {
-	int	i;
+	t_rdir	*rdir;
 
-	i = 0;
-	if (!redirect_arr)
-		return ;
-	while (redirect_arr[i])
+	while (node)
 	{
-		if (redirect_arr[i]->type == REDIRECT_HEREDOC)
+		rdir = node->rdir;
+		while (rdir)
 		{
-			if (redirect_arr[i]->fname)
+			if (rdir->type == REDIRECT_HEREDOC)
 			{
-				if (unlink(redirect_arr[i]->fname))
+				if (rdir->fname)
 				{
-					ft_putendl_fd(ft_strerr(errno), STDERR_FILENO);
-					ft_putendl_fd(redirect_arr[i]->fname, 1);
+					if (unlink(rdir->fname))
+					{
+						ft_putendl_fd(ft_strerr(errno), STDERR_FILENO);
+						ft_putendl_fd(rdir->fname, 1);
+					}
+					free(rdir->fname);
 				}
-				free(redirect_arr[i]->fname);
 			}
-		}	
-		free(redirect_arr[i]->arg2);
-		free(redirect_arr[i]);
-		++i;
-	}
-	free(redirect_arr);
-}
-
-void	free_pipe_line(t_pipe_line *pipe_line)
-{
-	t_pipe_line	*ptr;
-
-	while (pipe_line->next)
-		pipe_line = pipe_line->next;
-	while (pipe_line)
-	{
-		ptr = pipe_line->prev;
-		if (pipe_line->redirect_in)
-			redirect_clear(pipe_line->redirect_in);
-		if (pipe_line->redirect_out)
-			redirect_clear(pipe_line->redirect_out);
-		free(pipe_line->cmd);
-		free_str_arr(pipe_line->argv);
-		free(pipe_line);
-		pipe_line = ptr;
+			rdir = rdir->next;
+		}
+		node = node->next;
 	}
 }

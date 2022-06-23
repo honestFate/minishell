@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:39 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 03:21:06 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/23 06:05:32 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int	env_to_array(t_minishell *minishell)
 		free(minishell->env_arr);
 	}
 	minishell->env_arr = (char **)
-		malloc((minishell->env_list_size + 1) * sizeof(char *));
+		malloc((env_len(minishell->env_list) + 1) * sizeof(char *));
 	if (!minishell->env_arr)
 		return (errno);
 	if (!minishell->env_list_size)
@@ -73,7 +73,6 @@ int	env_to_array(t_minishell *minishell)
 	}
 	if (env_fill_array(minishell))
 	{
-		free(minishell->env_arr);
 		minishell->env_arr = NULL;
 		return (M_ERR);
 	}
@@ -90,7 +89,6 @@ static int	fill_list(t_minishell *minishell, char **envp)
 	if (!ptr)
 		return (errno);
 	minishell->env_list = ptr;
-	minishell->env_list_size = ++i;
 	while (envp[i])
 	{
 		ptr->next = new_env_elem(envp[i]);
@@ -99,7 +97,6 @@ static int	fill_list(t_minishell *minishell, char **envp)
 			env_list_clear(minishell);
 			return (errno);
 		}
-		minishell->env_list_size = i;
 		ptr = ptr->next;
 		++i;
 	}

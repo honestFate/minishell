@@ -12,8 +12,6 @@
 
 #include "minishell.h"
 
-int	g_status = 127;
-
 char	*write_af(int *i, t_params *data)
 {
 	char	*af_dollar;
@@ -74,12 +72,10 @@ void	rewrite(t_params *data, int i)
 	data->line = malloc(len + 2);
 	rewrite_new_line(bf_dollar, &i, instead_of, data);
 	rewrite_new_line_utils(af_dollar, i, data);
-	printf("line is %s\n", data->line);
 }
 
 void	check_dollar_with_single(t_params *data, int i)
 {
-
 	if (data->line[i + 1] == '\0')
 		return ;
 	i++;

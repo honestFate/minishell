@@ -12,49 +12,49 @@
 
 #include "minishell.h"
 
-int	checker(const char *key, char *skey)
+int	checker(const char *tmp_line, char *env_name)
 {
 	int	result;
 
-	result = (skey && ft_strlen(key) == ft_strlen(skey)
-			&& ft_strncmp(key, skey, ft_strlen(key)) == 0);
-	free(skey);
+	result = (env_name && ft_strlen(tmp_line) == ft_strlen(env_name)
+			&& ft_strncmp(tmp_line, env_name, ft_strlen(tmp_line)) == 0);
+	free(env_name);
 	return (result);
 }
-//понять что такое kay и skay
-char	*ft_get_value(const char *key, char **env)
+
+char	*get_value(char *tmp_line, char **env)
 {
 	int		i;
 	int		j;
-	char	*skey;
-	char	*svalue;
+	char	*env_name;
+	char	*env_value;
 
 	i = -1;
-	svalue = 0;
+	env_value = 0;
 	while (env[++i])
 	{
-		skey = 0;
+		env_name = 0;
 		j = 0;
-		if (ft_strnstr(env[i], key, ft_strlen(key)))
+		if (ft_strnstr(env[i], tmp_line, ft_strlen(tmp_line)))
 		{
 			while (env[i][j] != '=')
 				j++;
-			skey = ft_substr(env[i], 0, j);
+			env_name = ft_substr(env[i], 0, j);
 		}
-		if (checker(key, skey))
-			svalue = ft_strdup(&env[i][j + 1]);
-		if (svalue)
+		if (checker(tmp_line, env_name))
+			env_value = ft_strdup(&env[i][j + 1]);
+		if (env_value)
 			break ;
 	}
-	if (!svalue)
-		svalue = ft_strdup(" ");
-	return (svalue);
+	if (!env_value)
+		env_value = ft_strdup(" ");
+	return (env_value);
 }
 
 void	write_one_sym(t_params *data, t_quotes *quot, char *line)
 {
 	data->line[quot->j] = line[quot->i];
-	quot->j++;	
+	quot->j++;
 	quot->i++;
 }
 
@@ -73,8 +73,8 @@ void	check_flag(t_params *data, t_quotes *quot, char *line)
 	{
 		while (line[quot->i] && quot->flag)
 		{
-			if (line[quot->i] == '$' && is_nothing(line[quot->i - 1]) && 
-			!is_nothing(line[quot->i + 1]))
+			if (line[quot->i] == '$' && is_nothing(line[quot->i - 1])
+				&& !is_nothing(line[quot->i + 1]))
 				return ;
 			if (line[quot->i] == quot->flag)
 				quot->flag = 0;

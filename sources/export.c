@@ -12,42 +12,43 @@
 
 #include "minishell.h"
 
-int	export_new_val(t_minishell *minishell, t_pipe_line *pipe_line)
+int	export_new_val(t_minishell *minishell, t_node *pipe_line)
 {
 	int	i;
 	int	err;
 
 	i = 1;
 	err = M_OK;
-	while (pipe_line->argv[i])
+	while (pipe_line->arg[i])
 	{
-		if (i == 1 && pipe_line->argv[i][0] == '-' && pipe_line->argv[i][1])
+		printf("export val - %s|\n", pipe_line->arg[i]);
+		if (i == 1 && pipe_line->arg[i][0] == '-' && pipe_line->arg[i][1])
 		{
-			print_error(pipe_line->argv[0], INVALID_IDENTIFER,
-				pipe_line->argv[i]);
+			print_error(pipe_line->arg[0], INVALID_IDENTIFER,
+				pipe_line->arg[i]);
 			return (BUILTIN_FAIL);
 		}
-		if (envvar_validate_new(pipe_line->argv[i]))
+		if (envvar_validate_new(pipe_line->arg[i]))
 		{
 			err = M_ERR;
-			print_error(pipe_line->argv[0], INVALID_IDENTIFER,
-				pipe_line->argv[i]);
+			print_error(pipe_line->arg[0], INVALID_IDENTIFER,
+				pipe_line->arg[i]);
 		}
-		if (envlist_add_var(minishell, pipe_line->argv))
+		if (envlist_add_var(minishell, pipe_line->arg))
 			return (BUILTIN_FAIL);
 		++i;
 	}
 	return (err);
 }
 
-int	ft_export(t_minishell *minishell, t_pipe_line *pipe_line)
+int	ft_export(t_params *data, t_node *pipe_line)
 {
 	t_env_list	*ptr;
 
-	if (pipe_line->argv[1])
-		return (export_new_val(minishell, pipe_line));
-	select_sort(minishell->env_list);
-	ptr = minishell->env_list;
+	if (pipe_line->arg[1])
+		return (export_new_val(data->minishell, pipe_line));
+	select_sort(data->minishell->env_list);
+	ptr = data->minishell->env_list;
 	while (ptr)
 	{
 		if (ft_strcmp(ptr->key, "_") != 0)

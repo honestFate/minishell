@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   preparser.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtrinida <gtrinida@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 15:43:44 by gtrinida          #+#    #+#             */
-/*   Updated: 2022/06/19 05:21:19 by gtrinida         ###   ########.fr       */
+/*   Updated: 2022/06/23 06:41:14 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,21 @@ void	data_init(t_params *data)
 	data->key = 1;
 }
 
-int	cycle(char **env, t_params *data, int res)
+void	start_cmd_line(t_params *data, char *line, int *res)
+{
+	if (!fast_quotes_check(line))
+		printf("minishell: syntax error: unclosed quotes\n");
+	else if (parser(line, data->minishell->env_arr, data))
+	{
+		*res = 1;
+		if (line)
+			free(line);
+		exec_pipe_line(data);
+		clear_list(&(data->list));
+	}
+}
+
+int	cycle(t_params *data, int res)
 {
 	char	*line;
 
@@ -43,20 +57,18 @@ int	cycle(char **env, t_params *data, int res)
 	{
 		line = readline("minishell-3.2$ ");
 		if (!line)
-			return (1);
-		if (!fast_quotes_check(line))
-			printf("it was fast check >\n");
-		else if (parser(line, env, data))
+			exit_minishell(data, g_status);
+		if (*line)
 		{
-			res = 1;
-			if (line)
+			put_history_line(line, data->minishell->history_fd);
+			env_to_array(data->minishell);
+			start_cmd_line(data, line, &res);
+			if (!res)
 				free(line);
-			print_node(data->list);
-			//exec_pipe_line();
-			clear_list(&(data->list));
+			res = 0;
 		}
-		if (!res)
+		else
 			free(line);
-		res = 0;
 	}
+	return (M_OK);
 }

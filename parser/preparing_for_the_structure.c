@@ -6,7 +6,7 @@
 /*   By: gtrinida <gtrinida@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 15:43:44 by gtrinida          #+#    #+#             */
-/*   Updated: 2022/06/21 20:14:27 by gtrinida         ###   ########.fr       */
+/*   Updated: 2022/06/22 05:26:17 by gtrinida         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 
 void	data_node_init(t_params *data)
 {
+	data->node->arg_count = 0;
+	data->node->need_to_free_arg = 0;
+	data->node->need_to_free_str = 0;
 	data->node->n_rdir_arg = 0;
 	data->node->need_to_assign = 0;
 	data->node->next = NULL;
@@ -46,15 +49,20 @@ void	change_quotes(t_params *data, char flag, int i)
 	}
 }
 
-void	last_preparation_utils(t_params *data, t_quotes *quot, int i)
+void	start_work_arg(t_params *data, t_quotes *quot, int i, int count)
 {
-	i = 1;
 	while (i <= data->node->n_arg)
 	{	
 		if (find_arguments(data, quot))
 		{	
-			fill_argument(data, quot);
-			quot->i_arg++;
+			if (count > 0)
+			{
+				data->node->need_to_free_str = 1;
+				fill_argument(data, quot);
+				data->node->arg_count++;
+				quot->i_arg++;
+				count--;
+			}
 		}
 		if (data->node->need_to_assign)
 		{
@@ -63,6 +71,22 @@ void	last_preparation_utils(t_params *data, t_quotes *quot, int i)
 		}
 		i++;
 	}
+}
+
+void	last_preparation_utils(t_params *data, t_quotes *quot, int i)
+{
+	int	count;
+
+	count = data->node->n_arg;
+	i = 1;
+	if (data->node->n_arg != 0)
+	{
+		if (count == 1 && data->node->n_rdir_arg == 1)
+			count = 1;
+		else
+			count -= data->node->n_rdir_arg;
+	}
+	start_work_arg(data, quot, i, count);
 	if (data->node->n_arg != 0)
 	{
 		if (data->node->n_arg == 1 && data->node->n_rdir_arg == 1)
@@ -82,7 +106,6 @@ void	last_preparation(t_params *data, t_quotes *quot, int i, int flag)
 		i++;
 	if (!data->key)
 			i += 2;
-	printf("dl is %s\n", data->line);
 	change_quotes(data, flag, i);
 	check_dollar_with_quest(data);
 	data->node = malloc(sizeof(t_node));
@@ -95,7 +118,10 @@ void	last_preparation(t_params *data, t_quotes *quot, int i, int flag)
 		data->node->need_to_assign = 0;
 	}
 	data->node->n_arg = argument_count(data, quot, 0, 0);
-	if (data->node->n_arg != 0)
+	if (data->node->n_arg > 0)
+	{
 		data->node->arg = malloc(sizeof(char *) * data->node->n_arg);
+		data->node->need_to_free_arg = 1;
+	}
 	last_preparation_utils(data, quot, i);
 }

@@ -28,9 +28,10 @@ int	write_quotes(t_params *data, t_quotes *quot, int i, char *line)
 	}
 	return (1);
 }
+
 int	before_inside_utils(char *line, t_params *data, t_quotes *quot)
 {
-	int i;
+	int	i;
 
 	if (!data->key)
 		return (1);
@@ -55,7 +56,8 @@ int	before_inside_utils(char *line, t_params *data, t_quotes *quot)
 
 int	check_flag_bf(char *line, t_quotes *quot)
 {
-	if (line[quot->i + 1] == quot->flag && !is_nothing(line[quot->i + 2]) && !is_rdir(line[quot->i + 2]))
+	if (line[quot->i + 1] == quot->flag && !is_nothing(line[quot->i + 2])
+		&& !is_rdir(line[quot->i + 2]))
 	{
 		if (quot->flag != line[quot->i + 2])
 		{
@@ -76,13 +78,15 @@ void	before_inside(t_quotes *quot, t_params *data, char *line, char **env)
 		return ;
 	if (!check_flag_bf(line, quot))
 		return ;
-	if (we_need_this_quotes(line, quot->i, quot->flag) || heredock_behind(line, quot->i))
+	if (we_need_this_quotes(line, quot->i, quot->flag)
+		|| heredock_behind(line, quot->i))
 	{
 		quot->pass_quote = 1;
 		data->line[quot->j] = line[quot->i];
 		quot->j++;
 	}
-	else if (we_need_this_quotes(line, quot->i + 1, quot->flag) || heredock_behind(line, quot->i))
+	else if (we_need_this_quotes(line, quot->i + 1, quot->flag)
+		|| heredock_behind(line, quot->i))
 	{
 		quot->pass_quote = 1;
 		data->line[quot->j] = line[quot->i + 1];

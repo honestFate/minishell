@@ -16,7 +16,7 @@ static void	interactive_sigint(int signal)
 {
 	if (signal == SIGINT)
 	{
-		g_exit_status = 1;
+		g_status = 1;
 		ft_putchar_fd('\n', STDOUT_FILENO);
 		rl_on_new_line();
 		rl_replace_line("", 0);

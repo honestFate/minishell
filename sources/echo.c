@@ -12,27 +12,27 @@
 
 #include "minishell.h"
 
-int	ft_echo(t_minishell *minishell, t_pipe_line *pipe_line)
+int	ft_echo(t_params *data, t_node *pipe_line)
 {
 	int	i;
 	int	flag;
 
-	(void)minishell;
+	(void)data;
 	i = 1;
 	flag = 0;
-	while (pipe_line->argv[i] && !strcmp(pipe_line->argv[i], "-n"))
+	while (i < pipe_line->arg_count + 1 && !strcmp(pipe_line->arg[i], "-n"))
 	{
 		++flag;
 		++i;
 	}
-	if (pipe_line->argv[i])
+	if (i < pipe_line->arg_count + 1)
 	{
-		ft_putstr_fd(pipe_line->argv[i], STDOUT_FILENO);
+		ft_putstr_fd(pipe_line->arg[i], STDOUT_FILENO);
 		++i;
-		while (pipe_line->argv[i])
+		while (pipe_line->arg[i])
 		{
 			ft_putchar_fd(' ', STDOUT_FILENO);
-			ft_putstr_fd(pipe_line->argv[i], STDOUT_FILENO);
+			ft_putstr_fd(pipe_line->arg[i], STDOUT_FILENO);
 			++i;
 		}
 	}

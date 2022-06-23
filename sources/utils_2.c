@@ -37,15 +37,28 @@ int	ft_isspace(char c)
 	return (0);
 }
 
-/*
-free NULL-terminated str array
-*/
-void	free_str_arr(char **strings)
+void	free_str_arr(char **strings, int n_arg)
 {
 	int	i;
 
 	i = 0;
-	while (strings[i])
-		free(strings[i++]);
-	free(strings);
+	if (strings)
+	{
+		while (i < n_arg)
+			free(strings[i++]);
+		free(strings);
+	}
+}
+
+void	free_strarr_terminated(char **strings)
+{
+	int	i;
+
+	i = 0;
+	if (strings)
+	{
+		while (strings[i])
+			free(strings[i++]);
+		free(strings);
+	}
 }

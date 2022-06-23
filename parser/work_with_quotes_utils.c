@@ -25,14 +25,14 @@ void	param_init(t_quotes *quot)
 	quot->end = 0;
 }
 
-int check_command_before(char *line, int i)
+int	check_command_before(char *line, int i)
 {
 	i--;
 	while (i >= 0)
 	{
 		if (!is_nothing(line[i]))
 			return (0);
-		i--;	
+		i--;
 	}
 	return (1);
 }

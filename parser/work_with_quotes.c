@@ -50,9 +50,9 @@ void	inside_quotes(char *line, t_quotes *quot, t_params *data, char **env)
 	}
 	else
 		inside_utils(line, quot, data, env);
-	if(quot->i >= (int)ft_strlen(line))
+	if (quot->i >= (int)ft_strlen(line))
 	{
-		quot->i = ft_strlen(line);	
+		quot->i = ft_strlen(line);
 		return ;
 	}
 	quot->i++;
@@ -64,7 +64,7 @@ void	not_quotes(char *line, t_quotes *quot, t_params *data)
 	{
 		if (line[quot->i + 1] == '\0')
 		{
-			data->line[quot->j] = line[quot->i]; //"$UU" $ чтобы записало $
+			data->line[quot->j] = line[quot->i];
 			quot->i++;
 			quot->j++;
 		}

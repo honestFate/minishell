@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   argv_crutch.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/23 05:55:42 by ndillon           #+#    #+#             */
+/*   Updated: 2022/06/23 05:55:43 by ndillon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static int	fill_args(char **fixed, char **argv, int i, int n_arg)
@@ -24,7 +36,7 @@ char	**argv_crutch(char **argv, char *cmd, int n_arg)
 	char	**fixed;
 
 	i = 0;
-	fixed = (char **)malloc((n_arg + 1) * sizeof(char *));
+	fixed = (char **)malloc((n_arg + 2) * sizeof(char *));
 	if (!fixed)
 		return (NULL);
 	fixed[i] = ft_strdup(cmd);
@@ -35,6 +47,6 @@ char	**argv_crutch(char **argv, char *cmd, int n_arg)
 	}
 	if (fill_args(fixed, argv, i, n_arg))
 		return (NULL);
-	free_str_arr(argv);
+	free_str_arr(argv, n_arg);
 	return (fixed);
 }

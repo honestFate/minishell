@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:54 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 05:32:24 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/23 06:36:59 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,10 @@
 
 char	*ft_strerr(int error)
 {
+	if (error == TOO_MANY_ARGS)
+		return ("too many arguments");
+	if (error == ENOENT)
+		return ("command not found");
 	if (error <= 102)
 		return (strerror(error));
 	if (error == INVALID_IDENTIFER)
@@ -51,15 +55,11 @@ void	print_error(char *cmd, int error, char *arg)
 	ft_putendl_fd(ft_strerr(error), STDERR_FILENO);
 }
 
-void	exit_minishell(
-	t_minishell *minishell,
-	t_pipe_line *pipe_line,
-	int exit_status)
+void	exit_minishell(t_params *data, int exit_status)
 {
-	ft_putendl_fd("exiting minishell", STDERR_FILENO);
-	free_pipe_line(pipe_line);
-	free_str_arr(minishell->env_arr);
-	env_list_clear(minishell);
-	//free(minishell);
+	clear_list(&data->list);
+	free_minishell(data->minishell);
+	free(data);
+	rl_clear_history();
 	exit(exit_status);
 }

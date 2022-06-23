@@ -6,18 +6,19 @@
 /*   By: gtrinida <gtrinida@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 15:43:44 by gtrinida          #+#    #+#             */
-/*   Updated: 2022/06/21 01:04:07 by gtrinida         ###   ########.fr       */
+/*   Updated: 2022/06/21 23:22:38 by gtrinida         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int argument_count_utils(t_params *data, int flag, int *count, int *i)
+int	argument_count_utils(t_params *data, int flag, int *count, int *i)
 {
-	if ((is_nothing(data->line[*i]) || data->line[*i + 1] == '\0') && !flag)
+	if ((is_nothing(data->line[*i]) || data->line[*i + 1] == '\0')
+		&& !flag)
 	{	
 		(*count)++;
-		while(is_nothing(data->line[*i + 1]))
+		while (is_nothing(data->line[*i + 1]))
 			(*i)++;
 		if (!data->line[*i])
 			return (0);
@@ -27,10 +28,10 @@ int argument_count_utils(t_params *data, int flag, int *count, int *i)
 
 int	argument_count(t_params *data, t_quotes *quot, int count, int flag)
 {
-	int i;
+	int	i;
 
 	i = quot->start;
-	while(is_nothing(data->line[i]))
+	while (is_nothing(data->line[i]))
 		i++;
 	while (data->line[i])
 	{
@@ -42,7 +43,7 @@ int	argument_count(t_params *data, t_quotes *quot, int count, int flag)
 		}
 		if (data->line[i] == '\r' && flag)
 			flag = 0;
-		else if (data->line[i] == '\r' && !flag && check_ahead(data->line, i)) //написал + 1 для  echo ""$"" 123
+		else if (data->line[i] == '\r' && !flag && check_ahead(data->line, i))
 			flag = 1;
 		if (!argument_count_utils(data, flag, &count, &i))
 			return (count);

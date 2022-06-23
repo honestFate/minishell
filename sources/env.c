@@ -6,22 +6,22 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:51 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:12:52 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/23 05:42:49 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	ft_env(t_minishell *minishell, t_pipe_line *pipe_line)
+int	ft_env(t_params *data, t_node *pipe_line)
 {
 	t_env_list	*ptr;
 
-	if (pipe_line->argv[1])
+	if (pipe_line->arg[1])
 	{
-		print_error(pipe_line->argv[0], USAGE_ERROR, pipe_line->argv[1]);
+		print_error(pipe_line->arg[0], USAGE_ERROR, pipe_line->arg[1]);
 		return (BUILTIN_FAIL);
 	}
-	ptr = minishell->env_list;
+	ptr = data->minishell->env_list;
 	while (ptr)
 	{
 		if (ptr->val)

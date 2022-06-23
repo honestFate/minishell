@@ -6,7 +6,7 @@
 /*   By: gtrinida <gtrinida@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 19:20:13 by gtrinida          #+#    #+#             */
-/*   Updated: 2022/06/20 23:31:14 by gtrinida         ###   ########.fr       */
+/*   Updated: 2022/06/22 03:52:14 by gtrinida         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 int	quots_with_heredoc(char *line, int i)
 {
-	while(is_nothing(line[i]))
-		i++;	
+	while (is_nothing(line[i]))
+		i++;
 	if (line[i] == '\r')
 		return (1);
 	return (0);
@@ -24,9 +24,13 @@ int	quots_with_heredoc(char *line, int i)
 void	fill_agrunent_rdir_utils(t_rdir *tmp, t_quotes *quot, t_params *data)
 {
 	int	i;
+	int	end;
 
+	end = quot->end;
 	i = 0;
-	while (quot->start <= quot->end)
+	if (somethind_ahead(data->line, end))
+		end--;
+	while (quot->start <= end)
 	{
 		if (data->line[quot->start] != '\r')
 		{
@@ -58,14 +62,15 @@ void	fill_argument_rdir(t_params *data, t_quotes *quot, int type)
 	tmp->type = type;
 }
 
-void	start_work_rdir_utils(t_params *data, t_quotes *quot, int type, int plus_end)
+void	start_work_rdir_utils(t_params *data, t_quotes *quot,
+	int type, int plus_end)
 {
 	quot->start = quot->end + plus_end;
 	find_arguments(data, quot);
 	fill_argument_rdir(data, quot, type);
 }
 
-void start_work_rdir(t_params *data, t_quotes *quot)
+void	start_work_rdir(t_params *data, t_quotes *quot)
 {
 	add_rdir(&(data->node->rdir));
 	if (data->line[quot->end] == '>' && data->line[quot->end + 1] != '>')

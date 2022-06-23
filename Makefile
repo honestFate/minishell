@@ -12,7 +12,7 @@ EXECUTE_SRC	=	cd.c					env.c							env_sort.c				env_utils_3.c					\
 				echo.c					env_list.c						env_utils_2.c			exec_cmd.c						\
 				heredoc_utils.c			pwd.c							std_backup.c			utils_2.c						\
 				exec_command_line.c		exit.c							utils.c					export.c						\
-				minishell_struct.c
+				minishell_init.c		argv_crutch.c					utils_exec.c
 
 PARSER_SRC	=	argument_count.c		fast_qout_check_utils.c			parser_utils.c			rdir_count.c					\
 				rewrite_dollar_utils.c	work_with_dollar_utils.c 		work_with_pipe.c		before_inside_quotes.c			\
@@ -40,7 +40,7 @@ $(NAME): $(OBJECTS)
 
 $(BUILDDIR)/%.o: ./%.c
 	mkdir -p $(@D)
-	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
+	$(CC) $(CFLAGS) $(INC) -g -c -o $@ $<
 
 clean:
 	@make -C ./libft/ clean

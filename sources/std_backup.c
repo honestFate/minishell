@@ -14,6 +14,7 @@
 
 int	stdbackup_copy(t_std_backup *std_backup)
 {
+	errno = 0;
 	std_backup->stdin_backup = dup(STDIN_FILENO);
 	if (std_backup->stdin_backup >= 0)
 	{

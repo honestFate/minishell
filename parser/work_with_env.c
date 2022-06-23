@@ -31,9 +31,9 @@ void	is_it_env_utils(int *j, int start_tmp, int *start)
 	*start = start_tmp;
 }
 
-int is_it_env(char **env, char *line, int end, int start)
+int	is_it_env(char **env, char *line, int end, int start)
 {
-	int i;
+	int	i;
 	int	j;
 	int	start_tmp;
 
@@ -44,7 +44,7 @@ int is_it_env(char **env, char *line, int end, int start)
 	{
 		if (env[i][j] == line[start])
 		{
-			while(env[i][j] != '=' && start <= end && env[i][j] == line[start])
+			while (env[i][j] != '=' && start <= end && env[i][j] == line[start])
 			{
 				start++;
 				j++;
@@ -61,8 +61,9 @@ int is_it_env(char **env, char *line, int end, int start)
 
 void	get_new_memory(t_params *data, int len, t_quotes *quot)
 {
-	char *tmp_line;
-	int i;
+	char	*tmp_line;
+	int		i;
+
 	i = 0;
 	tmp_line = malloc(quot->j + 1);
 	while (i < quot->j)
@@ -74,7 +75,7 @@ void	get_new_memory(t_params *data, int len, t_quotes *quot)
 	free(data->line);
 	data->line = malloc(len + 1);
 	i = 0;
-	while(tmp_line[i])
+	while (tmp_line[i])
 	{
 		data->line[i] = tmp_line[i];
 		i++;
@@ -84,17 +85,18 @@ void	get_new_memory(t_params *data, int len, t_quotes *quot)
 
 int	get_env(t_params *data, t_quotes *quot, char *line, char **env)
 {
-	int start;
-	int end;
-	char *env_value;
-	char *tmp_line;
-	int len;
+	int		start;
+	int		end;
+	char	*env_value;
+	char	*tmp_line;
+	int		len;
 
 	start = quot->i;
 	end = get_finish(line, start);
 	tmp_line = ft_substr(line, start, end - start + 1);
-	env_value = ft_get_value(tmp_line, env);
-	len = quot->j + ft_strlen(env_value) + ft_strlen(line) - (quot->i - (end - start));
+	env_value = get_value(tmp_line, env);
+	len = quot->j + ft_strlen(env_value)
+		+ ft_strlen(line) - (quot->i - (end - start));
 	get_new_memory(data, len, quot);
 	env_join(data, quot, env_value);
 	free(env_value);

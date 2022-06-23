@@ -40,22 +40,22 @@ int	get_finish_utils(char *line, int i, int len)
 	{
 		if (is_nothing(line[i]))
 			return (i - 1);
-		if (line[i] == '\"')	
+		if (line[i] == '\"')
 			return (i - 1);
 		return (i);
 	}
 	if (line[i] == '\'')
 		return (i - 1);
-	if (line[i + 1] == '$')	
+	if (line[i + 1] == '$')
 		return (i);
 	return (-1);
 }
 
-int get_finish(char *line, int i)
+int	get_finish(char *line, int i)
 {
-	int len;
+	int	len;
 	int	end;
-	
+
 	end = 0;
 	len = ft_strlen(line);
 	while (line[i])
@@ -67,4 +67,3 @@ int get_finish(char *line, int i)
 	}
 	return (-1);
 }
-

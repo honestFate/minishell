@@ -6,7 +6,7 @@
 /*   By: gtrinida <gtrinida@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/16 14:10:48 by gtrinida          #+#    #+#             */
-/*   Updated: 2022/06/20 22:59:16 by gtrinida         ###   ########.fr       */
+/*   Updated: 2022/06/22 04:21:17 by gtrinida         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	check_len_of_command(char *line, int i)
 	i = check_len_of_command_utils(line, i, &flag);
 	if (flag)
 	{
-		printf(">\n");
+		printf("minishell: syntax error: unclosed quotes\n");
 		return (-1);
 	}
 	return (i);

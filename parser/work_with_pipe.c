@@ -16,15 +16,15 @@ int	on_pipe(char *line, int *i, int *correct_close)
 {
 	if (line[*i] == '\0')
 	{
-		printf(">\n");
+		printf("minishel: syntax error\n");
 		return (0);
 	}
-	while(line[*i])
+	while (line[*i])
 	{
 		if (!is_nothing(line[*i]) && line[*i] != '|')
 		{
 			*correct_close = 1;
-			break;
+			break ;
 		}
 		if (line[*i] == '|')
 		{
@@ -35,7 +35,7 @@ int	on_pipe(char *line, int *i, int *correct_close)
 	}
 	if (!(*correct_close))
 	{
-		printf(">\n");
+		printf("minishel: syntax error\n");
 		return (0);
 	}
 	return (1);
@@ -59,6 +59,7 @@ int	check_bad_syntax_utils(char *line, char *flag, int *first, int *i)
 		*first = 1;
 	return (1);
 }
+
 int	check_bad_syntax(char *line, int i, int first, int pipe)
 {
 	char	flag;
@@ -68,7 +69,7 @@ int	check_bad_syntax(char *line, int i, int first, int pipe)
 	correct_close = 0;
 	while (line[i])
 	{
-		if(!check_bad_syntax_utils(line, &flag, &first, &i))
+		if (!check_bad_syntax_utils(line, &flag, &first, &i))
 			return (0);
 		if (line[i] == '|' && !flag)
 		{
@@ -85,7 +86,7 @@ int	check_bad_syntax(char *line, int i, int first, int pipe)
 	return (pipe);
 }
 
-int pipe_bad_syntax(char *line)
+int	pipe_bad_syntax(char *line)
 {
 	int	tmp;
 

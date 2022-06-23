@@ -34,5 +34,5 @@ int	env_copy(t_minishell *minishell, char **env)
 		++i;
 	}
 	minishell->env_arr[i] = NULL;
-	return (M_ERR);
+	return (M_OK);
 }

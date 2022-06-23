@@ -39,25 +39,25 @@ char	*get_word(char *str)
 	return (word);
 }
 
-int	expand_var(t_minishell *minishell, char *line, int fd, int i)
+int	expand_var(t_minishell *minishell, char *line, int fd, int *i)
 {
 	char	*var;
 	char	*env_val;
 
-	if (line[i + 1] == '?')
+	if (line[*i + 1] == '?')
 	{
-		ft_putnbr_fd(g_exit_status, fd);
+		ft_putnbr_fd(g_status, fd);
 		i += 2;
 	}
 	else
 	{
-		var = get_word(line + i + 1);
+		var = get_word(line + *i + 1);
 		if (!var)
 			return (M_ERR);
 		env_val = env_get_val(minishell->env_list, var);
 		if (env_val)
 			write(fd, env_val, ft_strlen(env_val));
-		i += ft_strlen(var) + 1;
+		*i += ft_strlen(var) + 1;
 		free(var);
 	}
 	return (M_OK);
@@ -70,10 +70,9 @@ int	heredoc_put_str(t_minishell *minishell, char *line, int fd, int expand)
 	i = 0;
 	while (line[i])
 	{
-		if (expand && line[i] == '$' && line[i + 1]
-			&& (i > 0 && line[i - 1] == '\\'))
+		if (!expand && line[i] == '$' && line[i + 1])
 		{
-			if (expand_var(minishell, line, fd, i))
+			if (expand_var(minishell, line, fd, &i))
 				return (M_ERR);
 		}
 		else

@@ -20,6 +20,7 @@ int	envlist_change_val(t_env_list *env_list, char *key, char *new_val)
 			return (env_set_val(env_list, new_val));
 		env_list = env_list->next;
 	}
+	free(new_val);
 	return (M_OK);
 }
 

@@ -6,11 +6,18 @@
 /*   By: gtrinida <gtrinida@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 15:37:53 by gtrinida          #+#    #+#             */
-/*   Updated: 2022/06/17 01:08:21 by gtrinida         ###   ########.fr       */
+/*   Updated: 2022/06/22 05:27:47 by gtrinida         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	is_it_specsym(char sym)
+{
+	if ((sym < 48 || sym > 57) && !is_nothing(sym) && sym != '\0')
+		return (1);
+	return (0);
+}
 
 int	is_it_letter(char sym)
 {

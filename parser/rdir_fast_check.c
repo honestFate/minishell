@@ -16,19 +16,27 @@ void	double_rdir_utils(char *line, int i)
 {
 	if (!is_rdir(line[i + 3]))
 	{
-		printf("syntax error near unexpected token `%c'\n", line[i + 2]);
+		ft_putstr_fd("syntax error near unexpected token `", STDOUT_FILENO);
+		ft_putchar_fd(line[i + 2], STDOUT_FILENO);
+		ft_putendl_fd("'", STDOUT_FILENO);
 		return ;
 	}
 	if (is_rdir(line[i + 3]))
 	{
 		if (line[i + 2] == line[i + 3])
 		{
-			printf("syntax error near unexpected token `%c%c'\n",
-				line[i + 2], line[i + 3]);
+			ft_putstr_fd("syntax error near unexpected token `", STDOUT_FILENO);
+			ft_putchar_fd(line[i + 2], STDOUT_FILENO);
+			ft_putchar_fd(line[i + 3], STDOUT_FILENO);
+			ft_putendl_fd("'", STDOUT_FILENO);
 			return ;
 		}
 		else
-			printf("syntax error near unexpected token `%c'\n", line[i + 2]);
+		{
+			ft_putstr_fd("syntax error near unexpected token `", STDOUT_FILENO);
+			ft_putchar_fd(line[i + 2], STDOUT_FILENO);
+			ft_putendl_fd("'", STDOUT_FILENO);
+		}
 	}		
 }
 

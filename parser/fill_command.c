@@ -16,7 +16,7 @@ int	check_ahead(char *line, int i)
 {
 	if (line[i + 1] == '\0')
 		return (0);
-	i++;//добавил для кейсов echo 1""$"" 123 и тп, по сути без этого она всегда будет возвращать 1
+	i++;
 	while (line[i])
 	{
 		if (line[i] == '\r')
@@ -24,7 +24,6 @@ int	check_ahead(char *line, int i)
 		i++;
 	}
 	return (0);
-	
 }
 
 void	find_command_utils(t_params *data, t_quotes *quot, int i, int flag)
@@ -58,15 +57,15 @@ void	find_command(t_params *data, t_quotes *quot)
 
 	flag = 0;
 	i = 0;
-	
 	while (is_nothing(data->line[i]))
 		i++;
-	if (data->line[i] == '\r' && data->line[i + 1] == '\r' && data->line[i + 2] != '\r' 
-	&& (is_nothing(data->line[i + 2]) || !data->line[i + 2]))
+	if (data->line[i] == '\r' && data->line[i + 1] == '\r'
+		&& data->line[i + 2] != '\r'
+		&& (is_nothing(data->line[i + 2]) || !data->line[i + 2]))
 	{
 		data->line[i] = '\'';
 		data->line[i + 1] = '\'';
-		data->key = 0; // добавил для "$UU" $   "$USERA" и тп
+		data->key = 0;
 	}
 	if (data->line[i])
 		find_command_utils(data, quot, i, flag);
@@ -83,10 +82,11 @@ void	fill_command_utils(t_params *data, t_quotes *quot)
 
 void	fill_command(t_params *data, t_quotes *quot)
 {
-	int i;
-	int end;
+	int	i;
+	int	end;
+
 	end = quot->end;
-	if (data->node->need_to_assign)
+	if (data->node->need_to_assign || somethind_ahead(data->line, end))
 		end--;
 	if (!data->key)
 	{

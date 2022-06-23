@@ -6,47 +6,43 @@
 /*   By: gtrinida <gtrinida@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 12:45:53 by gtrinida          #+#    #+#             */
-/*   Updated: 2022/06/21 01:27:00 by gtrinida         ###   ########.fr       */
+/*   Updated: 2022/06/22 05:27:00 by gtrinida         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	work_with_dollar_outside(char *line, t_quotes *quot, t_params *data, char **env)
+void	work_with_dollar_outside(char *line, t_quotes *quot,
+	t_params *data, char **env)
 {
 	if (line[quot->i] == '$')
 	{	
 		if (line[quot->i + 1] == '?')
 		{
-			data->line[quot->j] = line[quot->i];
-			quot->j++;
-			quot->i++;
-			data->line[quot->j] = line[quot->i];
-			quot->j++;
-			quot->i++;
+			write_one_sym(data, quot, line);
+			write_one_sym(data, quot, line);
 			return ;
 		}
 		if (!check_multi_dollars(line, quot, data, 0))
 			return ;
-		if (ft_isdigit(line[quot->i + 1]))	
+		if (ft_isdigit(line[quot->i + 1]))
 			quot->i += 2;
 		else if (line[quot->i + 1] == '\'' || line[quot->i + 1] == '\"')
-			quot->i += 1; 
-		else if (is_it_letter(line[quot->i + 1]))
+			quot->i += 1;
+		else if (is_it_letter(line[quot->i + 1])
+			|| is_it_specsym(line[quot->i + 1]))
 		{
-			printf("we came in wwdo\n");
-			find_new_command(quot, data, line, env); 
+			find_new_command(quot, data, line, env);
 		}
 	}
 }
 
 void	wwd_double_utils(t_params *data, t_quotes *quot, char *line, char **env)
 {
-	if (line[quot->i] == '$' && !ft_isdigit(line[quot->i + 1]) //вот тут !ft_isdigit(line[quot->i + 1] возможно и не нужна
-		&& !is_nothing(line[quot->i + 1]) && line[quot->i + 1]) //добавил && line[quot->i + 1] для кейса ""$
+	if (line[quot->i] == '$' && !ft_isdigit(line[quot->i + 1])
+		&& !is_nothing(line[quot->i + 1]) && line[quot->i + 1])
 	{
-		
-		if (line[quot->i + 1] == '\'' 
+		if (line[quot->i + 1] == '\''
 			|| line[quot->i + 1] == '\"')
 			return ;
 		if (line[quot->i] == '$' && line[quot->i + 1] == '?')
@@ -59,7 +55,6 @@ void	wwd_double_utils(t_params *data, t_quotes *quot, char *line, char **env)
 			quot->i++;
 			return ;
 		}
-		printf("We came in from wwd\n");
 		check_multi_dollars(line, quot, data, 0);
 		find_new_command(quot, data, line, env);
 	}
@@ -101,7 +96,7 @@ int	wwd_single(t_params *data, t_quotes *quot, char *line)
 			}
 			quot->flag = 0;
 			quot->i++;
-			break;
+			break ;
 		}
 		data->line[quot->j] = line[quot->i];
 		quot->j++;
@@ -109,6 +104,7 @@ int	wwd_single(t_params *data, t_quotes *quot, char *line)
 	}
 	return (1);
 }
+
 void	work_with_dollar(t_quotes *quot, char *line, t_params *data, char **env)
 {
 	if (quot->flag == '\'')

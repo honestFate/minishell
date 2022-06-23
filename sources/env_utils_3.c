@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:58:23 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 06:34:21 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/23 06:06:55 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,27 +38,26 @@ void	envlist_delone(t_minishell *minishell, char *key)
 	t_env_list	*ptr;
 	t_env_list	*tmp;
 
-	if (minishell->env_list)
+	if (!minishell->env_list)
+		return ;
+	if (!ft_strcmp(minishell->env_list->key, key))
 	{
-		if (!ft_strcmp(minishell->env_list->key, key))
+		tmp = minishell->env_list;
+		minishell->env_list = minishell->env_list->next;
+		env_del_elem(tmp);
+	}
+	else
+	{
+		ptr = minishell->env_list;
+		while (ptr && ptr->next)
 		{
-			tmp = minishell->env_list;
-			minishell->env_list = minishell->env_list->next;
-			env_del_elem(tmp);
-		}
-		else
-		{
-			ptr = minishell->env_list;
-			while (ptr && ptr->next)
+			if (!ft_strcmp(ptr->next->key, key))
 			{
-				if (!ft_strcmp(ptr->next->key, key))
-				{
-					tmp = ptr->next;
-					ptr->next = ptr->next->next;
-					env_del_elem(tmp);
-				}
-				ptr = ptr->next;
+				tmp = ptr->next;
+				ptr->next = ptr->next->next;
+				env_del_elem(tmp);
 			}
+			ptr = ptr->next;
 		}
 	}
 }

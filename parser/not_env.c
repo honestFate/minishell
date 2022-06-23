@@ -14,7 +14,7 @@
 
 int	not_dollar_ahead(t_params *data, t_quotes *quot, char *line)
 {
-	while(line[quot->i])
+	while (line[quot->i])
 	{
 		if (line[quot->i] == quot->flag)
 		{
@@ -30,10 +30,10 @@ int	not_dollar_ahead(t_params *data, t_quotes *quot, char *line)
 		if (is_nothing(line[quot->i]))
 			return (0);
 		if (quot->flag && line[quot->i] == quot->flag)
-			{
-				quot->flag = 0;
-				return(0);
-			}
+		{
+			quot->flag = 0;
+			return (0);
+		}
 		quot->i++;
 	}
 	return (0);
@@ -43,13 +43,14 @@ int	not_env_cycle_utils(t_quotes *quot, t_params *data, char *line)
 {
 	if (quot->flag && (line[quot->i] == '\'' || is_nothing(line[quot->i])))
 	{
-		while(line[quot->i] != '$')
+		while (line[quot->i] != '$')
 		{
 			if (line[quot->i] == quot->flag)
 				break ;
 			write_one_sym(data, quot, line);
 		}
-		if (line[quot->i] == '$' && (line[quot->i + 1] == quot->flag || is_nothing(line[quot->i + 1])))
+		if (line[quot->i] == '$' && (line[quot->i + 1] == quot->flag
+				|| is_nothing(line[quot->i + 1])))
 			write_one_sym(data, quot, line);
 		else if (line[quot->i] == '$')
 			return (1);
@@ -86,8 +87,8 @@ int	not_env_cycle(t_quotes *quot, t_params *data, char *line)
 				quot->i += 1;
 				return (0);
 			}
-			if(!is_nothing(line[quot->i + 2]))
-				break;
+			if (!is_nothing(line[quot->i + 2]))
+				break ;
 		}
 		quot->i++;
 	}
@@ -96,7 +97,8 @@ int	not_env_cycle(t_quotes *quot, t_params *data, char *line)
 
 int	not_env(t_quotes *quot, t_params *data, char *line)
 {
-	if (line[quot->i - 1] == '$' && line[quot->i] == '\"' && next_quot_check(line, quot->i)) //добавил next_quot_check
+	if (line[quot->i - 1] == '$' && line[quot->i] == '\"'
+		&& next_quot_check(line, quot->i))
 	{
 		data->line[quot->j] = line[quot->i - 1];
 		quot->j++;

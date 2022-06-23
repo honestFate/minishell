@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:13:35 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 01:29:05 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/23 06:05:47 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,4 +88,18 @@ int	check_overflow(char *s)
 		++s;
 	}
 	return (M_OK);
+}
+
+int	env_len(t_env_list *ptr)
+{
+	int	i;
+
+	i = 0;
+	while (ptr)
+	{
+		if (ptr->val)
+			i++;
+		ptr = ptr->next;
+	}
+	return (i);
 }

@@ -6,7 +6,7 @@
 /*   By: ndillon <ndillon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/19 01:12:34 by ndillon           #+#    #+#             */
-/*   Updated: 2022/06/19 06:21:27 by ndillon          ###   ########.fr       */
+/*   Updated: 2022/06/23 06:03:14 by ndillon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,7 @@ static int	set_shlvl(t_minishell *minishell)
 
 	lvl = ft_getenv(minishell->env_list, "SHLVL");
 	if (lvl == NULL)
-	{
-		ft_putendl_fd("NO SHLVL", 1);
 		shlvl = ft_strdup("SHLVL=1");
-	}
 	else
 	{
 		lvl = ft_itoa(ft_atoi(lvl) + 1);
@@ -89,12 +86,12 @@ static int	set_oldpwd(t_minishell *minishell)
 	t_env_list	*oldpwd_var;
 
 	if (ft_getenv(minishell->env_list, "OLDPWD"))
-		return (envlist_delone(minishell, "OLDPWD"), M_OK);
+		return (envlist_change_val(minishell->env_list, "OLDPWD", NULL));
 	oldpwd_var = new_env_elem("OLDPWD");
 	if (!oldpwd_var)
 		return (M_ERR);
 	env_add_back(&minishell->env_list, oldpwd_var);
-	return (M_ERR);
+	return (M_OK);
 }
 
 int	default_env(t_minishell *minishell)

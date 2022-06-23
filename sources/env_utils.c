@@ -14,17 +14,9 @@
 
 int	env_set_key(t_env_list *elem, char *key)
 {
-	int		key_len;
-	char	*temp;
-
-	key_len = ft_strlen(key) + 1;
-	temp = (char *)malloc(key_len * sizeof(char));
-	if (!temp)
-		return (M_ERR);
 	if (elem->key)
 		free(elem->key);
-	ft_strlcpy(temp, key, key_len);
-	elem->key = temp;
+	elem->key = key;
 	return (M_OK);
 }
 

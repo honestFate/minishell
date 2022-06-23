@@ -14,7 +14,7 @@
 
 static int	heredoc_readline(
 	t_minishell *minishell,
-	t_redirect *r_info,
+	t_rdir *r_info,
 	int fd)
 {
 	int		err;
@@ -26,9 +26,9 @@ static int	heredoc_readline(
 		line = readline(TERM_CYAN "> " TERM_RESET);
 		if (!isatty(STDIN_FILENO))
 			err = M_ERR;
-		else if (!line || !ft_strcmp(line, r_info->arg2))
+		else if (!line || !ft_strcmp(line, r_info->arg))
 			err = M_OK;
-		else if (heredoc_put_str(minishell, line, fd, r_info->expand))
+		else if (heredoc_put_str(minishell, line, fd, r_info->heredock_quote))
 			err = M_ERR;
 		safe_free(line);
 		if (err == M_ERR || err == M_OK)
@@ -36,7 +36,7 @@ static int	heredoc_readline(
 	}
 }
 
-char	*heredoc(t_minishell *minishell, t_redirect *r_info, int index)
+char	*heredoc(t_minishell *minishell, t_rdir *r_info, int index)
 {
 	int		fd;
 	char	*fname;

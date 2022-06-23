@@ -6,24 +6,11 @@
 /*   By: gtrinida <gtrinida@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 19:20:13 by gtrinida          #+#    #+#             */
-/*   Updated: 2022/06/20 07:20:52 by gtrinida         ###   ########.fr       */
+/*   Updated: 2022/06/22 03:27:11 by gtrinida         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-t_node	*new_node(char *cmd, char **arg)
-{
-	t_node	*node;
-
-	node = (t_node *)malloc(sizeof(t_node));
-	node->cmd = cmd;
-	node->arg = arg;
-	node->rdir = NULL;
-	node->next = NULL;
-	node->prev = NULL;
-	return (node);
-}
 
 t_rdir	*create_node(int i)
 {
