@@ -58,12 +58,8 @@ void	print_error(char *cmd, int error, char *arg)
 void	exit_minishell(t_params *data, int exit_status)
 {
 	clear_list(&data->list);
-	write(1, "here\n", 5);
 	free_minishell(data->minishell);
-	write(1, "here\n", 5);
 	free(data);
-	write(1, "here\n", 5);
 	rl_clear_history();
-	write(1, "here\n", 5);
 	exit(exit_status);
 }

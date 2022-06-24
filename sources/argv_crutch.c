@@ -16,7 +16,6 @@ static int	fill_args(char **fixed, char **argv, int i, int n_arg)
 {
 	while (i < n_arg)
 	{
-		ft_putendl_fd("args fill", 1);
 		fixed[i + 1] = ft_strdup(argv[i]);
 		if (!fixed[i + 1])
 		{
@@ -37,8 +36,8 @@ char	**argv_crutch(char **argv, char *cmd, int n_arg)
 	char	**fixed;
 
 	i = 0;
-	printf("n_arg - %d\n", n_arg);
-	printf("cmd - %s\n", cmd);
+	/*printf("n_arg - %d\n", n_arg);
+	printf("cmd - %s\n", cmd);*/
 	fixed = (char **)malloc((n_arg + 2) * sizeof(char *));
 	if (!fixed)
 		return (NULL);

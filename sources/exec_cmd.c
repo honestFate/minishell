@@ -42,7 +42,7 @@ int	exec_cmd(t_params *data, t_node *pipe_line,
 	char	*path_to_cmd;
 
 	path_to_cmd = NULL;
-	printf("%d %d %d\n", pipe_line->need_to_free_str, pipe_line->n_arg, pipe_line->need_to_free_str);
+	//printf("%d %d %d\n", pipe_line->need_to_free_str, pipe_line->n_arg, pipe_line->need_to_free_str);
 	pipe_line->arg = argv_crutch(pipe_line->arg, pipe_line->cmd,
 			pipe_line->arg_count);
 	pipe_line->arg_count++;
