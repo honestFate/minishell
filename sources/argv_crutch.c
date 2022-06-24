@@ -50,5 +50,6 @@ char	**argv_crutch(char **argv, char *cmd, int n_arg)
 	}
 	if (fill_args(fixed, argv, i, n_arg))
 		return (NULL);
+	free_str_arr(argv, n_arg);
 	return (fixed);
 }

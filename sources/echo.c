@@ -20,12 +20,12 @@ int	ft_echo(t_params *data, t_node *pipe_line)
 	(void)data;
 	i = 1;
 	flag = 0;
-	while (i < pipe_line->arg_count + 1 && !strcmp(pipe_line->arg[i], "-n"))
+	while (i < pipe_line->arg_count && !strcmp(pipe_line->arg[i], "-n"))
 	{
 		++flag;
 		++i;
 	}
-	if (i < pipe_line->arg_count + 1)
+	if (i < pipe_line->arg_count)
 	{
 		ft_putstr_fd(pipe_line->arg[i], STDOUT_FILENO);
 		++i;

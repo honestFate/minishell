@@ -21,7 +21,6 @@ int	export_new_val(t_minishell *minishell, t_node *pipe_line)
 	err = M_OK;
 	while (pipe_line->arg[i])
 	{
-		printf("export val - %s|\n", pipe_line->arg[i]);
 		if (i == 1 && pipe_line->arg[i][0] == '-' && pipe_line->arg[i][1])
 		{
 			print_error(pipe_line->arg[0], INVALID_IDENTIFER,

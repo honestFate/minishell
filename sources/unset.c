@@ -19,7 +19,7 @@ int	ft_unset(t_params *data, t_node *pipe_line)
 
 	i = 1;
 	err = M_OK;
-	while (i < pipe_line->arg_count + 1)
+	while (i < pipe_line->arg_count)
 	{
 		if (envvar_validate(pipe_line->arg[i]))
 		{
